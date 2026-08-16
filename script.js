@@ -2016,10 +2016,12 @@ function createHouse() {
      */
 
     heartGroup.position.set(
-        0,
-        6.5,
-        -5
-    );
+       0,
+       6.5,
+       -4.7
+   );
+   
+   heartGroup.rotation.y = Math.PI;
 
 
     heartGroup.scale.set(
