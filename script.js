@@ -456,6 +456,8 @@ function createWorld() {
     createPath();
 
     createMountains();
+   
+   createRomanticGarden();
 
 }
 
@@ -1116,6 +1118,8 @@ function animate() {
 
     updatePlayer();
 
+   animatePetals();
+
 
     renderer.render(
         scene,
@@ -1152,7 +1156,607 @@ function onWindowResize() {
     );
 
 }
+/* =========================================================
+   🌸 CEREZOS
+   ========================================================= */
 
+function createCherryTree(x, z, scale = 1) {
+
+    const tree = new THREE.Group();
+
+    /* -----------------------------
+       TRONCO
+       ----------------------------- */
+
+    const trunkGeometry =
+        new THREE.CylinderGeometry(
+            0.35 * scale,
+            0.5 * scale,
+            4 * scale,
+            6
+        );
+
+    const trunkMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x5b3b35,
+            roughness: 1
+        });
+
+    const trunk =
+        new THREE.Mesh(
+            trunkGeometry,
+            trunkMaterial
+        );
+
+    trunk.position.y =
+        2 * scale;
+
+    trunk.castShadow = true;
+    trunk.receiveShadow = true;
+
+    tree.add(trunk);
+
+
+    /* -----------------------------
+       RAMAS
+       ----------------------------- */
+
+    const branchMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x68443d,
+            roughness: 1
+        });
+
+
+    for (let i = 0; i < 4; i++) {
+
+        const branchGeometry =
+            new THREE.CylinderGeometry(
+                0.16 * scale,
+                0.25 * scale,
+                2.2 * scale,
+                5
+            );
+
+        const branch =
+            new THREE.Mesh(
+                branchGeometry,
+                branchMaterial
+            );
+
+
+        const angle =
+            (Math.PI * 2 / 4) * i;
+
+
+        branch.position.set(
+
+            Math.cos(angle) *
+                1.1 * scale,
+
+            3.2 * scale,
+
+            Math.sin(angle) *
+                1.1 * scale
+
+        );
+
+
+        branch.rotation.z =
+            Math.cos(angle) * 0.7;
+
+        branch.rotation.x =
+            Math.sin(angle) * 0.7;
+
+
+        branch.castShadow = true;
+
+        tree.add(branch);
+
+    }
+
+
+    /* -----------------------------
+       FLORES DE CEREZO
+       ----------------------------- */
+
+    const flowerMaterials = [
+
+        new THREE.MeshStandardMaterial({
+            color: 0xffb7d1
+        }),
+
+        new THREE.MeshStandardMaterial({
+            color: 0xff8fb5
+        }),
+
+        new THREE.MeshStandardMaterial({
+            color: 0xffd2df
+        })
+
+    ];
+
+
+    /*
+       Varias "nubes" de flores alrededor
+       de las ramas.
+    */
+
+    for (let i = 0; i < 18; i++) {
+
+        const flowerGeometry =
+            new THREE.IcosahedronGeometry(
+                (0.65 + Math.random() * 0.45) *
+                scale,
+                1
+            );
+
+
+        const flower =
+            new THREE.Mesh(
+                flowerGeometry,
+
+                flowerMaterials[
+                    Math.floor(
+                        Math.random() *
+                        flowerMaterials.length
+                    )
+                ]
+            );
+
+
+        const angle =
+            Math.random() *
+            Math.PI * 2;
+
+
+        const radius =
+            Math.random() *
+            2.4 * scale;
+
+
+        flower.position.set(
+
+            Math.cos(angle) *
+                radius,
+
+            (4 + Math.random() * 2.2) *
+                scale,
+
+            Math.sin(angle) *
+                radius
+
+        );
+
+
+        flower.scale.y =
+            0.75;
+
+
+        flower.castShadow = true;
+
+
+        tree.add(flower);
+
+    }
+
+
+    tree.position.set(
+        x,
+        0,
+        z
+    );
+
+
+    scene.add(tree);
+
+    worldObjects.push(tree);
+
+}
+
+
+/* =========================================================
+   🌸 CREAR CEREZOS DEL CAMINO
+   ========================================================= */
+
+function createCherryTrees() {
+
+    const positions = [
+
+        // Lado izquierdo
+        [-10, -65, 1.1],
+        [-12, -45, 0.9],
+        [-10, -25, 1.2],
+        [-12, -5, 1.0],
+        [-10, 18, 1.1],
+        [-12, 40, 0.95],
+        [-10, 62, 1.15],
+
+        // Lado derecho
+        [10, -55, 1.0],
+        [12, -35, 1.15],
+        [10, -15, 0.9],
+        [12, 8, 1.1],
+        [10, 30, 1.0],
+        [12, 52, 1.2],
+        [10, 72, 0.95]
+
+    ];
+
+
+    positions.forEach(position => {
+
+        createCherryTree(
+            position[0],
+            position[1],
+            position[2]
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   🌷 TULIPANES
+   ========================================================= */
+
+function createTulip(x, z) {
+
+    const tulip =
+        new THREE.Group();
+
+
+    /* -----------------------------
+       TALLO
+       ----------------------------- */
+
+    const stemGeometry =
+        new THREE.CylinderGeometry(
+            0.045,
+            0.06,
+            0.8,
+            5
+        );
+
+
+    const stemMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x4f8a50
+        });
+
+
+    const stem =
+        new THREE.Mesh(
+            stemGeometry,
+            stemMaterial
+        );
+
+
+    stem.position.y =
+        0.4;
+
+
+    tulip.add(stem);
+
+
+    /* -----------------------------
+       FLOR
+       ----------------------------- */
+
+    const flowerGeometry =
+        new THREE.SphereGeometry(
+            0.18,
+            8,
+            6
+        );
+
+
+    const flowerMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0xff82b0
+        });
+
+
+    const flower =
+        new THREE.Mesh(
+            flowerGeometry,
+            flowerMaterial
+        );
+
+
+    flower.scale.set(
+        0.8,
+        1.2,
+        0.8
+    );
+
+
+    flower.position.y =
+        0.9;
+
+
+    tulip.add(flower);
+
+
+    /* -----------------------------
+       HOJAS
+       ----------------------------- */
+
+    const leafMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x5d9b59
+        });
+
+
+    for (let i = 0; i < 2; i++) {
+
+        const leafGeometry =
+            new THREE.SphereGeometry(
+                0.12,
+                6,
+                4
+            );
+
+
+        const leaf =
+            new THREE.Mesh(
+                leafGeometry,
+                leafMaterial
+            );
+
+
+        leaf.scale.set(
+            2,
+            0.5,
+            0.7
+        );
+
+
+        leaf.position.set(
+
+            i === 0 ? -0.12 : 0.12,
+
+            0.45,
+
+            0
+
+        );
+
+
+        leaf.rotation.z =
+            i === 0
+                ? -0.5
+                : 0.5;
+
+
+        tulip.add(leaf);
+
+    }
+
+
+    tulip.position.set(
+        x,
+        0,
+        z
+    );
+
+
+    scene.add(tulip);
+
+}
+
+
+/* =========================================================
+   🌷 CREAR MUCHOS TULIPANES
+   ========================================================= */
+
+function createTulipGarden() {
+
+    for (let z = -78; z < 82; z += 4) {
+
+        /*
+           Evitamos que los tulipanes estén
+           directamente encima del camino.
+        */
+
+        const leftX =
+            -6.5 -
+            Math.random() * 3;
+
+
+        const rightX =
+            6.5 +
+            Math.random() * 3;
+
+
+        createTulip(
+            leftX,
+            z + Math.random() * 2 - 1
+        );
+
+
+        createTulip(
+            rightX,
+            z + Math.random() * 2 - 1
+        );
+
+
+        /*
+           Alguno extra para que el jardín
+           se vea menos uniforme.
+        */
+
+        if (Math.random() > 0.45) {
+
+            createTulip(
+                leftX - Math.random() * 2,
+                z + 1
+            );
+
+        }
+
+
+        if (Math.random() > 0.45) {
+
+            createTulip(
+                rightX + Math.random() * 2,
+                z - 1
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   🍃 PÉTALOS DE CEREZO
+   ========================================================= */
+
+const petals = [];
+
+
+function createCherryPetals() {
+
+    const petalMaterial =
+        new THREE.MeshStandardMaterial({
+
+            color: 0xffb6ce,
+
+            transparent: true,
+
+            opacity: 0.9
+
+        });
+
+
+    for (let i = 0; i < 100; i++) {
+
+        const geometry =
+            new THREE.PlaneGeometry(
+                0.12,
+                0.12
+            );
+
+
+        const petal =
+            new THREE.Mesh(
+                geometry,
+                petalMaterial
+            );
+
+
+        petal.position.set(
+
+            (Math.random() - 0.5) * 30,
+
+            3 + Math.random() * 12,
+
+            (Math.random() - 0.5) * 150
+
+        );
+
+
+        petal.rotation.set(
+
+            Math.random() * Math.PI,
+
+            Math.random() * Math.PI,
+
+            Math.random() * Math.PI
+
+        );
+
+
+        petal.userData = {
+
+            speed:
+                0.003 +
+                Math.random() * 0.008,
+
+            drift:
+                (Math.random() - 0.5) *
+                0.01,
+
+            rotation:
+                (Math.random() - 0.5) *
+                0.02
+
+        };
+
+
+        scene.add(petal);
+
+        petals.push(petal);
+
+    }
+
+}
+
+
+/* =========================================================
+   🍃 ANIMAR PÉTALOS
+   ========================================================= */
+
+function animatePetals() {
+
+    petals.forEach(petal => {
+
+        petal.position.y -=
+            petal.userData.speed;
+
+
+        petal.position.x +=
+            petal.userData.drift;
+
+
+        petal.rotation.x +=
+            petal.userData.rotation;
+
+
+        petal.rotation.z +=
+            petal.userData.rotation;
+
+
+        /*
+           Cuando llega al suelo,
+           vuelve a aparecer arriba.
+        */
+
+        if (petal.position.y < 0) {
+
+            petal.position.y =
+                10 + Math.random() * 10;
+
+            petal.position.x =
+                (Math.random() - 0.5) * 30;
+
+            petal.position.z =
+                camera.position.z +
+                (Math.random() - 0.5) * 80;
+
+        }
+
+    });
+
+}
+
+
+/* =========================================================
+   🌸 ACTIVAR DECORACIÓN
+   ========================================================= */
+
+function createRomanticGarden() {
+
+    createCherryTrees();
+
+    createTulipGarden();
+
+    createCherryPetals();
+
+}
 
 /* =========================================================
    FIN
