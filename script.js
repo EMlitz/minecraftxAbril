@@ -2729,7 +2729,7 @@ function createHouse() {
     house.position.set(
         0,
         0,
-        70
+        -70
     );
 
 
