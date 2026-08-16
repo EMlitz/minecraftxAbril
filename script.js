@@ -2501,6 +2501,8 @@ function createProposalUI() {
 
             z-index: 10000;
 
+            pointer-events: auto;
+
             display: flex;
 
             align-items: center;
@@ -2744,18 +2746,22 @@ function createProposalUI() {
             <div id="proposal-buttons">
 
                 <button
-                    id="yes-button"
-                    class="proposal-button"
-                >
-                    Sí 💖
-                </button>
-
-                <button
-                    id="no-button"
-                    class="proposal-button"
-                >
-                    No 🥺
-                </button>
+                   id="yes-button"
+                   class="proposal-button"
+                   type="button"
+                   onclick="acceptProposal()"
+               >
+                   Sí 💖
+               </button>
+               
+               <button
+                   id="no-button"
+                   class="proposal-button"
+                   type="button"
+                   onclick="rejectProposal()"
+               >
+                   No 🥺
+               </button>
 
             </div>
 
@@ -2767,22 +2773,6 @@ function createProposalUI() {
     document.body.appendChild(
         proposal
     );
-
-
-    document
-        .getElementById("yes-button")
-        .addEventListener(
-            "click",
-            acceptProposal
-        );
-
-
-    document
-        .getElementById("no-button")
-        .addEventListener(
-            "click",
-            rejectProposal
-        );
 
 }
 
