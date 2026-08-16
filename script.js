@@ -3221,22 +3221,25 @@ function createCelebrationStyles() {
 
 function launchFireworks() {
 
+    /*
+     * Lanzamos varias explosiones
+     * con pequeños intervalos para
+     * que parezca una celebración real.
+     */
+
+    const totalBursts = 18;
+
     for (
-        let burst = 0;
-        burst < 12;
-        burst++
+        let i = 0;
+        i < totalBursts;
+        i++
     ) {
 
-        setTimeout(
-            () => {
+        setTimeout(() => {
 
-                createFireworkBurst();
+            createFireworkBurst();
 
-            },
-
-            burst * 350
-
-        );
+        }, i * 350);
 
     }
 
@@ -3244,30 +3247,81 @@ function launchFireworks() {
 
 
 /* =========================================================
-   🎆 CREAR EXPLOSIÓN
+   🎆 CREAR EXPLOSIÓN DE FUEGOS
    ========================================================= */
 
 function createFireworkBurst() {
 
+    /*
+     * Crear un punto aleatorio
+     * donde explotará el fuego artificial.
+     */
+
     const centerX =
-        Math.random() *
-        window.innerWidth;
+        10 +
+        Math.random() * 80;
 
 
     const centerY =
-        100 +
-        Math.random() *
-        window.innerHeight *
-        0.45;
+        10 +
+        Math.random() * 45;
 
 
-    const particles =
-        28;
+    /*
+     * Contenedor de la explosión.
+     */
+
+    const burst =
+        document.createElement("div");
+
+
+    burst.className =
+        "firework-burst";
+
+
+    burst.style.position =
+        "fixed";
+
+
+    burst.style.left =
+        centerX + "%";
+
+
+    burst.style.top =
+        centerY + "%";
+
+
+    burst.style.width =
+        "0px";
+
+
+    burst.style.height =
+        "0px";
+
+
+    burst.style.zIndex =
+        "20001";
+
+
+    burst.style.pointerEvents =
+        "none";
+
+
+    document.body.appendChild(
+        burst
+    );
+
+
+    /*
+     * Crear las partículas.
+     */
+
+    const particleCount = 42;
 
 
     for (
         let i = 0;
-        i < particles;
+        i < particleCount;
         i++
     ) {
 
@@ -3281,25 +3335,32 @@ function createFireworkBurst() {
             "firework-particle";
 
 
-        particle.style.left =
-            `${centerX}px`;
-
-
-        particle.style.top =
-            `${centerY}px`;
-
+        /*
+         * Ángulo de salida.
+         */
 
         const angle =
-            Math.random() *
-            Math.PI *
-            2;
+            (
+                Math.PI * 2
+            ) *
+            (
+                i /
+                particleCount
+            );
 
+
+        /*
+         * Distancia de la partícula.
+         */
 
         const distance =
-            50 +
-            Math.random() *
-            130;
+            60 +
+            Math.random() * 100;
 
+
+        /*
+         * Posición final.
+         */
 
         const x =
             Math.cos(angle) *
@@ -3311,35 +3372,154 @@ function createFireworkBurst() {
             distance;
 
 
+        /*
+         * Tamaño aleatorio.
+         */
+
+        const size =
+            4 +
+            Math.random() * 5;
+
+
+        particle.style.width =
+            size + "px";
+
+
+        particle.style.height =
+            size + "px";
+
+
+        particle.style.position =
+            "absolute";
+
+
+        particle.style.left =
+            "0px";
+
+
+        particle.style.top =
+            "0px";
+
+
+        particle.style.borderRadius =
+            "50%";
+
+
+        particle.style.pointerEvents =
+            "none";
+
+
+        /*
+         * Color aleatorio.
+         */
+
+        const colors = [
+
+            "#ff4f9a",
+            "#ff77b7",
+            "#ffd166",
+            "#ffffff",
+            "#ff9de2",
+            "#c77dff",
+            "#7bdff2"
+
+        ];
+
+
+        particle.style.background =
+            colors[
+                Math.floor(
+                    Math.random() *
+                    colors.length
+                )
+            ];
+
+
+        particle.style.boxShadow =
+            "0 0 8px currentColor";
+
+
+        /*
+         * Variables para la animación.
+         */
+
         particle.style.setProperty(
-            "--x",
-            `${x}px`
+            "--firework-x",
+            x + "px"
         );
 
 
         particle.style.setProperty(
-            "--y",
-            `${y}px`
+            "--firework-y",
+            y + "px"
         );
 
 
-        document.body.appendChild(
+        /*
+         * Añadir al centro
+         * de la explosión.
+         */
+
+        burst.appendChild(
             particle
         );
 
 
-        setTimeout(
-            () => {
+        /*
+         * Animación individual.
+         */
 
-                particle.remove();
+        particle.animate(
 
-            },
+            [
 
-            1300
+                {
+                    transform:
+                        "translate(0, 0) scale(1)",
+                    opacity: 1
+                },
+
+                {
+                    transform:
+                        `translate(
+                            ${x}px,
+                            ${y}px
+                        ) scale(.15)`,
+                    opacity: 0
+                }
+
+            ],
+
+            {
+
+                duration:
+                    900 +
+                    Math.random() *
+                    600,
+
+                easing:
+                    "cubic-bezier(.15,.8,.3,1)",
+
+                fill:
+                    "forwards"
+
+            }
 
         );
 
     }
+
+
+    /*
+     * Eliminar la explosión
+     * después de terminar.
+     */
+
+    setTimeout(() => {
+
+        burst.remove();
+
+    }, 1800);
 
 }
 
