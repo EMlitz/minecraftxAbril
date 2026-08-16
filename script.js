@@ -1629,207 +1629,1105 @@ function interactWithNearestObject() {
    🏠 CASITA
    ========================================================= */
 
+/* =========================================================
+   🏡 CASITA / PARQUE ROMÁNTICO FINAL
+   ========================================================= */
+
 function createHouse() {
 
-    house =
-        new THREE.Group();
+    house = new THREE.Group();
 
+    /* =====================================================
+       🎨 MATERIALES
+       ===================================================== */
 
-    /* -----------------------------
-       MATERIALES
-       ----------------------------- */
-
-    const wallMaterial =
+    const woodMaterial =
         new THREE.MeshStandardMaterial({
+            color: 0x70452f,
+            roughness: 0.9
+        });
 
-            color:
-                0xc89b76,
+    const darkWoodMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x4b2c28,
+            roughness: 1
+        });
 
-            roughness:
-                1
+    const pinkWoodMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0xb94f68,
+            roughness: 0.9
+        });
 
+    const leafMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x315c35,
+            roughness: 1
+        });
+
+    const leafLightMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x477a43,
+            roughness: 1
+        });
+
+    const pinkFlowerMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0xff82ae
+        });
+
+    const whiteFlowerMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0xffdbe7
+        });
+
+    const lanternMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0xffd59a,
+            emissive: 0xff8c55,
+            emissiveIntensity: 1.4
+        });
+
+    const stoneMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x806b61,
+            roughness: 1
+        });
+
+    const lightPinkMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0xffa8c1,
+            roughness: 0.8
+        });
+
+    const redMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0xa9364f,
+            roughness: 0.8
         });
 
 
-    const roofMaterial =
-        new THREE.MeshStandardMaterial({
+    /* =====================================================
+       🏡 PISO DEL PARQUE
+       ===================================================== */
 
-            color:
-                0x6d3d52,
+    const floorSize = 15;
+    const tileSize = 1.5;
 
-            roughness:
-                1
+    for (
+        let x = -floorSize / 2;
+        x < floorSize / 2;
+        x += tileSize
+    ) {
 
-        });
+        for (
+            let z = -floorSize / 2;
+            z < floorSize / 2;
+            z += tileSize
+        ) {
+
+            const tile =
+                new THREE.Mesh(
+
+                    new THREE.BoxGeometry(
+                        tileSize,
+                        0.22,
+                        tileSize
+                    ),
+
+                    (
+                        Math.round(x / tileSize) +
+                        Math.round(z / tileSize)
+                    ) % 2 === 0
+                        ? lightPinkMaterial
+                        : redMaterial
+
+                );
+
+            tile.position.set(
+                x,
+                0.11,
+                z
+            );
+
+            tile.receiveShadow = true;
+
+            house.add(tile);
+
+        }
+
+    }
 
 
-    const darkMaterial =
-        new THREE.MeshStandardMaterial({
+    /* =====================================================
+       🚪 PEQUEÑA ESTRUCTURA DE LA CASA
+       ===================================================== */
 
-            color:
-                0x3a2630,
-
-            roughness:
-                1
-
-        });
-
-
-    /* -----------------------------
-       CUERPO DE LA CASA
-       ----------------------------- */
-
-    const body =
+    const backWall =
         new THREE.Mesh(
 
             new THREE.BoxGeometry(
-                8,
-                4.5,
-                7
+                10,
+                4.8,
+                0.5
             ),
 
-            wallMaterial
+            darkWoodMaterial
 
         );
 
+    backWall.position.set(
+        0,
+        2.4,
+        -5.2
+    );
 
-    body.position.y =
-        2.25;
+    backWall.castShadow = true;
 
-
-    body.castShadow =
-        true;
-
-
-    body.receiveShadow =
-        true;
+    house.add(backWall);
 
 
-    house.add(
-        body
+    /* =====================================================
+       🪵 POSTES DE LA CASA
+       ===================================================== */
+
+    const postPositions = [
+
+        [-5, 0, -4.8],
+        [5, 0, -4.8],
+        [-5, 0, 4.8],
+        [5, 0, 4.8]
+
+    ];
+
+
+    postPositions.forEach(
+        position => {
+
+            const post =
+                new THREE.Mesh(
+
+                    new THREE.BoxGeometry(
+                        0.55,
+                        4.5,
+                        0.55
+                    ),
+
+                    woodMaterial
+
+                );
+
+            post.position.set(
+                position[0],
+                2.25,
+                position[2]
+            );
+
+            post.castShadow = true;
+
+            house.add(post);
+
+        }
     );
 
 
-    /* -----------------------------
-       TECHO
-       ----------------------------- */
+    /* =====================================================
+       🌿 TECHO / PÉRGOLA
+       ===================================================== */
 
     const roof =
         new THREE.Mesh(
 
-            new THREE.ConeGeometry(
-                5.7,
-                3.5,
-                4
-            ),
-
-            roofMaterial
-
-        );
-
-
-    roof.position.y =
-        6.2;
-
-
-    roof.rotation.y =
-        Math.PI / 4;
-
-
-    roof.castShadow =
-        true;
-
-
-    house.add(
-        roof
-    );
-
-
-    /* -----------------------------
-       PUERTA
-       ----------------------------- */
-
-    const door =
-        new THREE.Mesh(
-
             new THREE.BoxGeometry(
-                1.3,
-                2.3,
-                0.15
+                11,
+                0.6,
+                10
             ),
 
-            darkMaterial
+            darkWoodMaterial
 
         );
 
+    roof.position.y = 5;
 
-    door.position.set(
-        0,
-        1.15,
-        3.55
-    );
+    roof.castShadow = true;
 
-
-    house.add(
-        door
-    );
+    house.add(roof);
 
 
-    /* -----------------------------
-       VENTANAS
-       ----------------------------- */
+    /* =====================================================
+       🌿 VEGETACIÓN SOBRE EL TECHO
+       ===================================================== */
 
-    for (
-        const x of [-2.3, 2.3]
-    ) {
+    for (let i = 0; i < 35; i++) {
 
-        const windowMesh =
+        const leaf =
             new THREE.Mesh(
 
                 new THREE.BoxGeometry(
-                    1.4,
-                    1.3,
-                    0.12
+                    0.8 + Math.random() * 0.7,
+                    0.35,
+                    0.8 + Math.random() * 0.7
                 ),
 
-                new THREE.MeshStandardMaterial({
+                Math.random() > 0.5
+                    ? leafMaterial
+                    : leafLightMaterial
 
-                    color:
-                        0xffd59a,
+            );
 
-                    emissive:
-                        0xff8c69,
+        leaf.position.set(
 
-                    emissiveIntensity:
-                        0.45
+            (Math.random() - 0.5) * 10,
 
-                })
+            5.35 + Math.random() * 0.35,
+
+            (Math.random() - 0.5) * 8
+
+        );
+
+        leaf.rotation.y =
+            Math.random() * Math.PI;
+
+        house.add(leaf);
+
+    }
+
+
+    /* =====================================================
+       ❤️ CORAZÓN GIGANTE
+       ===================================================== */
+
+    const heartGroup =
+        new THREE.Group();
+
+
+    const heartMaterial =
+        new THREE.MeshStandardMaterial({
+
+            color:
+                0xb52f48,
+
+            emissive:
+                0x5c1020,
+
+            emissiveIntensity:
+                0.45
+
+        });
+
+
+    /*
+     * Dos partes superiores
+     */
+
+    const heartLeft =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                2.4,
+                2.4,
+                0.7
+            ),
+
+            heartMaterial
+
+        );
+
+
+    const heartRight =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                2.4,
+                2.4,
+                0.7
+            ),
+
+            heartMaterial
+
+        );
+
+
+    heartLeft.position.set(
+        -1.45,
+        1.15,
+        0
+    );
+
+
+    heartRight.position.set(
+        1.45,
+        1.15,
+        0
+    );
+
+
+    heartGroup.add(
+        heartLeft
+    );
+
+    heartGroup.add(
+        heartRight
+    );
+
+
+    /*
+     * Parte inferior del corazón
+     */
+
+    const heartBottom =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                4.3,
+                2.5,
+                0.7
+            ),
+
+            heartMaterial
+
+        );
+
+
+    heartBottom.position.set(
+        0,
+        -0.35,
+        0
+    );
+
+
+    heartBottom.rotation.z =
+        Math.PI / 4;
+
+
+    heartBottom.scale.x =
+        0.85;
+
+
+    heartGroup.add(
+        heartBottom
+    );
+
+
+    /*
+     * Corazón situado
+     * sobre la parte trasera
+     */
+
+    heartGroup.position.set(
+        0,
+        6.5,
+        -5
+    );
+
+
+    heartGroup.scale.set(
+        1.35,
+        1.35,
+        1
+    );
+
+
+    house.add(
+        heartGroup
+    );
+
+
+    /* =====================================================
+       ✨ LUZ DEL CORAZÓN
+       ===================================================== */
+
+    const heartLight =
+        new THREE.PointLight(
+            0xff5577,
+            2,
+            14
+        );
+
+    heartLight.position.set(
+        0,
+        6.5,
+        -4
+    );
+
+    house.add(
+        heartLight
+    );
+
+
+    /* =====================================================
+       🪑 BANCOS
+       ===================================================== */
+
+    function createBench(x, z) {
+
+        const bench =
+            new THREE.Group();
+
+
+        const seat =
+            new THREE.Mesh(
+
+                new THREE.BoxGeometry(
+                    3,
+                    0.35,
+                    0.8
+                ),
+
+                woodMaterial
 
             );
 
 
-        windowMesh.position.set(
+        seat.position.y =
+            1.15;
+
+
+        bench.add(
+            seat
+        );
+
+
+        /*
+         * Respaldo
+         */
+
+        const back =
+            new THREE.Mesh(
+
+                new THREE.BoxGeometry(
+                    3,
+                    1.2,
+                    0.3
+                ),
+
+                woodMaterial
+
+            );
+
+
+        back.position.set(
+            0,
+            1.7,
+            -0.25
+        );
+
+
+        bench.add(
+            back
+        );
+
+
+        /*
+         * Patas
+         */
+
+        for (
+            const px of [-1.1, 1.1]
+        ) {
+
+            const leg =
+                new THREE.Mesh(
+
+                    new THREE.BoxGeometry(
+                        0.3,
+                        1.1,
+                        0.5
+                    ),
+
+                    darkWoodMaterial
+
+                );
+
+            leg.position.set(
+                px,
+                0.55,
+                0
+            );
+
+            bench.add(
+                leg
+            );
+
+        }
+
+
+        bench.position.set(
             x,
-            2.5,
-            3.55
+            0,
+            z
         );
 
 
         house.add(
-            windowMesh
+            bench
         );
 
     }
 
 
-    /* -----------------------------
-       UBICACIÓN
-       ----------------------------- */
+    createBench(
+        -3.8,
+        1.3
+    );
+
+
+    createBench(
+        3.8,
+        1.3
+    );
+
+
+    /* =====================================================
+       🌸 MESA CENTRAL
+       ===================================================== */
+
+    const tableTop =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                2.2,
+                0.3,
+                1.4
+            ),
+
+            woodMaterial
+
+        );
+
+
+    tableTop.position.set(
+        0,
+        1.25,
+        1.3
+    );
+
+
+    house.add(
+        tableTop
+    );
+
+
+    const tableLeg =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                0.35,
+                1.2,
+                0.35
+            ),
+
+            darkWoodMaterial
+
+        );
+
+
+    tableLeg.position.set(
+        0,
+        0.65,
+        1.3
+    );
+
+
+    house.add(
+        tableLeg
+    );
+
+
+    /* =====================================================
+       🕯️ LUZ SOBRE LA MESA
+       ===================================================== */
+
+    const tableLight =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                0.18,
+                8,
+                8
+            ),
+
+            lanternMaterial
+
+        );
+
+
+    tableLight.position.set(
+        0,
+        1.65,
+        1.3
+    );
+
+
+    house.add(
+        tableLight
+    );
+
+
+    const tablePointLight =
+        new THREE.PointLight(
+            0xffb36b,
+            1.2,
+            8
+        );
+
+
+    tablePointLight.position.set(
+        0,
+        1.8,
+        1.3
+    );
+
+
+    house.add(
+        tablePointLight
+    );
+
+
+    /* =====================================================
+       🏮 FAROLES
+       ===================================================== */
+
+    function createLantern(x, z) {
+
+        const pole =
+            new THREE.Mesh(
+
+                new THREE.CylinderGeometry(
+                    0.09,
+                    0.12,
+                    1.5,
+                    6
+                ),
+
+                darkWoodMaterial
+
+            );
+
+
+        pole.position.set(
+            x,
+            0.75,
+            z
+        );
+
+
+        house.add(
+            pole
+        );
+
+
+        const lamp =
+            new THREE.Mesh(
+
+                new THREE.BoxGeometry(
+                    0.42,
+                    0.55,
+                    0.42
+                ),
+
+                lanternMaterial
+
+            );
+
+
+        lamp.position.set(
+            x,
+            1.65,
+            z
+        );
+
+
+        house.add(
+            lamp
+        );
+
+
+        const light =
+            new THREE.PointLight(
+                0xffaa66,
+                1.5,
+                6
+            );
+
+
+        light.position.set(
+            x,
+            1.65,
+            z
+        );
+
+
+        house.add(
+            light
+        );
+
+    }
+
+
+    createLantern(
+        -5.8,
+        4
+    );
+
+    createLantern(
+        5.8,
+        4
+    );
+
+    createLantern(
+        -5.8,
+        -1
+    );
+
+    createLantern(
+        5.8,
+        -1
+    );
+
+
+    /* =====================================================
+       🌿 ARBUSTOS
+       ===================================================== */
+
+    function createBush(
+        x,
+        z,
+        scale = 1
+    ) {
+
+        const bush =
+            new THREE.Group();
+
+
+        for (let i = 0; i < 5; i++) {
+
+            const leaf =
+                new THREE.Mesh(
+
+                    new THREE.IcosahedronGeometry(
+                        0.75 * scale,
+                        1
+                    ),
+
+                    Math.random() > 0.5
+                        ? leafMaterial
+                        : leafLightMaterial
+
+                );
+
+
+            leaf.position.set(
+
+                (Math.random() - 0.5) *
+                1.5 *
+                scale,
+
+                0.55 +
+                Math.random() *
+                0.7 *
+                scale,
+
+                (Math.random() - 0.5) *
+                1.2 *
+                scale
+
+            );
+
+
+            bush.add(
+                leaf
+            );
+
+        }
+
+
+        bush.position.set(
+            x,
+            0,
+            z
+        );
+
+
+        house.add(
+            bush
+        );
+
+    }
+
+
+    createBush(
+        -6.2,
+        -3.5,
+        1.2
+    );
+
+    createBush(
+        6.2,
+        -3.5,
+        1.2
+    );
+
+    createBush(
+        -6.5,
+        2.5,
+        1
+    );
+
+    createBush(
+        6.5,
+        2.5,
+        1
+    );
+
+
+    /* =====================================================
+       🌷 FLORES ALREDEDOR
+       ===================================================== */
+
+    function createParkFlower(
+        x,
+        z,
+        colorMaterial
+    ) {
+
+        const stem =
+            new THREE.Mesh(
+
+                new THREE.CylinderGeometry(
+                    0.035,
+                    0.045,
+                    0.6,
+                    5
+                ),
+
+                leafLightMaterial
+
+            );
+
+
+        stem.position.set(
+            x,
+            0.3,
+            z
+        );
+
+
+        house.add(
+            stem
+        );
+
+
+        const flower =
+            new THREE.Mesh(
+
+                new THREE.IcosahedronGeometry(
+                    0.18,
+                    1
+                ),
+
+                colorMaterial
+
+            );
+
+
+        flower.position.set(
+            x,
+            0.7,
+            z
+        );
+
+
+        house.add(
+            flower
+        );
+
+    }
+
+
+    for (let i = 0; i < 28; i++) {
+
+        const side =
+            Math.random() > 0.5
+                ? -1
+                : 1;
+
+
+        const x =
+            side *
+            (
+                6.5 +
+                Math.random() * 2.2
+            );
+
+
+        const z =
+            -5 +
+            Math.random() * 10;
+
+
+        createParkFlower(
+
+            x,
+            z,
+
+            Math.random() > 0.45
+                ? pinkFlowerMaterial
+                : whiteFlowerMaterial
+
+        );
+
+    }
+
+
+    /* =====================================================
+       🌹 FLORES DELANTE
+       ===================================================== */
+
+    for (let i = 0; i < 18; i++) {
+
+        const x =
+            -5 +
+            Math.random() * 10;
+
+        const z =
+            4.5 +
+            Math.random() * 3;
+
+        createParkFlower(
+
+            x,
+            z,
+
+            Math.random() > 0.5
+                ? pinkFlowerMaterial
+                : whiteFlowerMaterial
+
+        );
+
+    }
+
+
+    /* =====================================================
+       🪨 CAMINO DE ENTRADA
+       ===================================================== */
+
+    for (
+        let z = 7;
+        z < 25;
+        z += 1.6
+    ) {
+
+        const stone =
+            new THREE.Mesh(
+
+                new THREE.BoxGeometry(
+                    2.4,
+                    0.18,
+                    1.3
+                ),
+
+                stoneMaterial
+
+            );
+
+
+        stone.position.set(
+
+            (Math.random() - 0.5) *
+            1.5,
+
+            0.09,
+
+            z
+
+        );
+
+
+        stone.rotation.y =
+            (Math.random() - 0.5) *
+            0.25;
+
+
+        stone.receiveShadow = true;
+
+
+        house.add(
+            stone
+        );
+
+    }
+
+
+    /* =====================================================
+       🪧 CARTEL FINAL
+       ===================================================== */
+
+    const signPost =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                0.18,
+                1.7,
+                0.18
+            ),
+
+            woodMaterial
+
+        );
+
+
+    signPost.position.set(
+        7.2,
+        0.85,
+        5
+    );
+
+
+    house.add(
+        signPost
+    );
+
+
+    const signBoard =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                2.8,
+                1.4,
+                0.18
+            ),
+
+            pinkWoodMaterial
+
+        );
+
+
+    signBoard.position.set(
+        7.2,
+        1.6,
+        5
+    );
+
+
+    signBoard.rotation.y =
+        -0.2;
+
+
+    house.add(
+        signBoard
+    );
+
+
+    /* =====================================================
+       📍 UBICACIÓN FINAL
+       ===================================================== */
 
     house.position.set(
         0,
         0,
-        78
+        70
     );
 
 
