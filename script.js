@@ -1,32 +1,28 @@
 /* =========================================================
    MUNDO 3D - UN MUNDO PARA TI ❤️
-   Primera versión:
-   - Three.js
-   - Terreno de bloques
-   - Atardecer
-   - Sendero
-   - Cámara en primera persona
-   - Joystick táctil
-   ========================================================= */
-
-
-/* =========================================================
-   CONFIGURACIÓN
+   Script completo
    ========================================================= */
 
 const WORLD = {
     width: 70,
     depth: 180,
-
     playerHeight: 1.7,
-
-    moveSpeed: 0.08,
-
-    gravity: 0.015,
-
-    groundHeight: 0
+    moveSpeed: 0.11
 };
 
+/* =========================================================
+   ✏️ TUS MENSAJES
+   ========================================================= */
+
+const SIGN_MESSAGES = [
+    "ESCRIBE AQUÍ EL MENSAJE DEL CARTEL 1",
+    "ESCRIBE AQUÍ EL MENSAJE DEL CARTEL 2",
+    "ESCRIBE AQUÍ EL MENSAJE DEL CARTEL 3",
+    "ESCRIBE AQUÍ EL MENSAJE DEL CARTEL 4"
+];
+
+const HOUSE_MESSAGE =
+    "ESCRIBE AQUÍ EL MENSAJE FINAL DE LA CASITA";
 
 /* =========================================================
    ELEMENTOS HTML
@@ -35,237 +31,137 @@ const WORLD = {
 const mainMenu = document.getElementById("main-menu");
 const loadingScreen = document.getElementById("loading-screen");
 const gameScreen = document.getElementById("game-screen");
-
 const startButton = document.getElementById("start-button");
-
-const loadingProgress =
-    document.getElementById("loading-progress");
-
-const loadingText =
-    document.getElementById("loading-text");
-
-const gameContainer =
-    document.getElementById("game-container");
-
-const joystickBase =
-    document.getElementById("joystick-base");
-
-const joystickStick =
-    document.getElementById("joystick-stick");
-
-
-/* =========================================================
-   VARIABLES THREE.JS
-   ========================================================= */
-
-let scene;
-let camera;
-let renderer;
-
-let clock;
-
-let player;
-
-let worldObjects = [];
-
-let animationStarted = false;
-
-
-/* =========================================================
-   JOYSTICK
-   ========================================================= */
-
-let joystickActive = false;
-
-let joystickX = 0;
-let joystickY = 0;
-
-let joystickPointerId = null;
-
-
-/* =========================================================
-   MOVIMIENTO DEL JUGADOR
-   ========================================================= */
-
-const velocity = new THREE.Vector3();
-
-let playerRotation = 0;
-
-
-/* =========================================================
-   INICIAR
-   ========================================================= */
-
-startButton.addEventListener("click", () => {
-
-    showScreen(loadingScreen);
-
-    simulateLoading();
-
-});
-
-
-/* =========================================================
-   CAMBIAR PANTALLA
-   ========================================================= */
-
-function showScreen(screen) {
-
-    document
-        .querySelectorAll(".screen")
-        .forEach(element => {
-
-            element.classList.remove("active");
-
-        });
-
-    screen.classList.add("active");
-
-}
-
-
-/* =========================================================
-   CARGA
-   ========================================================= */
-
-function simulateLoading() {
-
-    let progress = 0;
-
-    const messages = [
-
-        "Preparando el mundo...",
-
-        "Generando el terreno...",
-
-        "Preparando el atardecer...",
-
-        "Plantando flores...",
-
-        "Generando los árboles...",
-
-        "Construyendo el camino...",
-
-        "Preparando la aventura...",
-
-        "Casi listo..."
-
-    ];
-
-    const interval = setInterval(() => {
-
-        progress += 2;
-
-        loadingProgress.style.width =
-            `${progress}%`;
-
-        const index =
-            Math.min(
-                Math.floor(progress / 13),
-                messages.length - 1
-            );
-
-        loadingText.textContent =
-            messages[index];
-
-
-        if (progress >= 100) {
-
-            clearInterval(interval);
-
-            setTimeout(() => {
-
-                startWorld();
-
-            }, 500);
-
-        }
-
-    }, 40);
-
-}
-
-
-/* =========================================================
-   CREAR MUNDO
-   ========================================================= */
-
-function startWorld() {
-
-    showScreen(gameScreen);
-
-    if (!scene) {
-
-        initializeThree();
-
-    }
-
-}
-
+const loadingProgress = document.getElementById("loading-progress");
+const loadingText = document.getElementById("loading-text");
+const gameContainer = document.getElementById("game-container");
+const joystickBase = document.getElementById("joystick-base");
+const joystickStick = document.getElementById("joystick-stick");
 
 /* =========================================================
    THREE.JS
    ========================================================= */
 
+let scene;
+let camera;
+let renderer;
+let animationStarted = false;
+let playerRotation = 0;
+
+const worldObjects = [];
+const petals = [];
+const signs = [];
+
+let joystickActive = false;
+let joystickX = 0;
+let joystickY = 0;
+let joystickPointerId = null;
+
+let lookActive = false;
+let lastTouchX = 0;
+
+let activeMessage = null;
+let messageTimer = null;
+let house = null;
+let houseTriggered = false;
+
+/* =========================================================
+   INICIO
+   ========================================================= */
+
+if (startButton) {
+    startButton.addEventListener("click", () => {
+        showScreen(loadingScreen);
+        simulateLoading();
+    });
+}
+
+function showScreen(screen) {
+    if (!screen) return;
+
+    document.querySelectorAll(".screen").forEach(element => {
+        element.classList.remove("active");
+    });
+
+    screen.classList.add("active");
+}
+
+function simulateLoading() {
+    let progress = 0;
+
+    const messages = [
+        "Preparando el mundo...",
+        "Generando el terreno...",
+        "Preparando el atardecer...",
+        "Plantando tulipanes...",
+        "Generando los cerezos...",
+        "Construyendo el sendero...",
+        "Colocando los carteles...",
+        "Preparando algo especial...",
+        "Casi listo..."
+    ];
+
+    const interval = setInterval(() => {
+        progress += 2;
+
+        if (loadingProgress) {
+            loadingProgress.style.width = `${progress}%`;
+        }
+
+        const index = Math.min(
+            Math.floor(progress / 12),
+            messages.length - 1
+        );
+
+        if (loadingText) {
+            loadingText.textContent = messages[index];
+        }
+
+        if (progress >= 100) {
+            clearInterval(interval);
+
+            setTimeout(() => {
+                startWorld();
+            }, 500);
+        }
+    }, 35);
+}
+
+function startWorld() {
+    showScreen(gameScreen);
+
+    if (!scene) {
+        initializeThree();
+    }
+}
+
+/* =========================================================
+   INICIALIZAR THREE.JS
+   ========================================================= */
+
 function initializeThree() {
-
-    /* -----------------------------------------
-       ESCENA
-       ----------------------------------------- */
-
     scene = new THREE.Scene();
 
-
-    /* -----------------------------------------
-       CIELO
-       ----------------------------------------- */
-
-    scene.background =
-        new THREE.Color(0xe99aa8);
-
-
-    /* -----------------------------------------
-       CÁMARA
-       ----------------------------------------- */
+    scene.background = new THREE.Color(0xe99aa8);
+    scene.fog = new THREE.Fog(0xe99aa8, 45, 175);
 
     camera = new THREE.PerspectiveCamera(
-
         70,
-
-        window.innerWidth /
-        window.innerHeight,
-
+        window.innerWidth / window.innerHeight,
         0.05,
-
         500
-
     );
-
 
     camera.position.set(
-
         0,
-
         WORLD.playerHeight,
-
         8
-
     );
 
-
-    /* -----------------------------------------
-       RENDERER
-       ----------------------------------------- */
-
-    renderer =
-        new THREE.WebGLRenderer({
-
-            antialias: true,
-
-            powerPreference: "high-performance"
-
-        });
-
+    renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        powerPreference: "high-performance"
+    });
 
     renderer.setPixelRatio(
         Math.min(window.devicePixelRatio, 1.5)
@@ -276,886 +172,196 @@ function initializeThree() {
         window.innerHeight
     );
 
-
     renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    renderer.shadowMap.type =
-        THREE.PCFSoftShadowMap;
-
-
-    gameContainer.appendChild(
-        renderer.domElement
-    );
-
-
-    /* -----------------------------------------
-       RELOJ
-       ----------------------------------------- */
-
-    clock = new THREE.Clock();
-
-
-    /* -----------------------------------------
-       LUCES
-       ----------------------------------------- */
+    gameContainer.appendChild(renderer.domElement);
 
     createLights();
-
-
-    /* -----------------------------------------
-       TERRENO
-       ----------------------------------------- */
-
     createWorld();
 
-
-    /* -----------------------------------------
-       JUGADOR
-       ----------------------------------------- */
-
-    player = {
-
-        position:
-            camera.position,
-
-        velocity:
-            velocity
-
-    };
-
-
-    /* -----------------------------------------
-       CONTROLES
-       ----------------------------------------- */
-
     setupJoystick();
-
     setupTouchCamera();
-
-
-    /* -----------------------------------------
-       RESIZE
-       ----------------------------------------- */
 
     window.addEventListener(
         "resize",
         onWindowResize
     );
 
-
-    /* -----------------------------------------
-       LOOP
-       ----------------------------------------- */
-
     animationStarted = true;
-
     animate();
-
 }
-
 
 /* =========================================================
    LUCES
    ========================================================= */
 
 function createLights() {
-
-    /* Luz ambiental */
-
-    const ambientLight =
-        new THREE.HemisphereLight(
-
-            0xffd2d9,
-
-            0x33263d,
-
-            1.8
-
-        );
+    const ambientLight = new THREE.HemisphereLight(
+        0xffd2d9,
+        0x33263d,
+        1.8
+    );
 
     scene.add(ambientLight);
 
-
-    /* Sol del atardecer */
-
-    const sun =
-        new THREE.DirectionalLight(
-
-            0xffb08a,
-
-            3
-
-        );
-
-
-    sun.position.set(
-
-        -40,
-        50,
-        60
-
+    const sun = new THREE.DirectionalLight(
+        0xffb08a,
+        3
     );
 
-
+    sun.position.set(-40, 50, 60);
     sun.castShadow = true;
 
-
     sun.shadow.mapSize.width = 1024;
-
     sun.shadow.mapSize.height = 1024;
 
-
     sun.shadow.camera.left = -80;
-
     sun.shadow.camera.right = 80;
-
     sun.shadow.camera.top = 100;
-
     sun.shadow.camera.bottom = -100;
-
 
     scene.add(sun);
 
-
-    /* Luz cálida delante */
-
-    const sunsetLight =
-        new THREE.PointLight(
-
-            0xff7f9d,
-
-            2,
-
-            120
-
-        );
-
-
-    sunsetLight.position.set(
-
-        0,
-        15,
-        70
-
+    const sunsetLight = new THREE.PointLight(
+        0xff7f9d,
+        2,
+        120
     );
 
-
+    sunsetLight.position.set(0, 15, 70);
     scene.add(sunsetLight);
-
 }
 
-
 /* =========================================================
-   CREAR MUNDO
+   MUNDO
    ========================================================= */
 
 function createWorld() {
-
     createGround();
-
     createPath();
-
     createMountains();
-   
-   createRomanticGarden();
-
+    createRomanticGarden();
+    createSigns();
+    createHouse();
 }
-
 
 /* =========================================================
    SUELO
    ========================================================= */
 
 function createGround() {
-
-    const groundGeometry =
-        new THREE.BoxGeometry(
-
-            WORLD.width,
-            1,
-            WORLD.depth
-
-        );
-
-
-    const groundMaterial =
-        new THREE.MeshStandardMaterial({
-
-            color: 0x6b8f62,
-
-            roughness: 1
-
-        });
-
-
-    const ground =
-        new THREE.Mesh(
-
-            groundGeometry,
-            groundMaterial
-
-        );
-
-
-    ground.position.set(
-
-        0,
-        -0.5,
-        0
-
+    const geometry = new THREE.BoxGeometry(
+        WORLD.width,
+        1,
+        WORLD.depth
     );
 
+    const material = new THREE.MeshStandardMaterial({
+        color: 0x6b8f62,
+        roughness: 1
+    });
 
+    const ground = new THREE.Mesh(
+        geometry,
+        material
+    );
+
+    ground.position.set(0, -0.5, 0);
     ground.receiveShadow = true;
 
-
     scene.add(ground);
-
     worldObjects.push(ground);
-
 }
 
-
 /* =========================================================
-   CAMINO
+   SENDERO
    ========================================================= */
 
 function createPath() {
-
     const blockSize = 2;
-
     const pathWidth = 5;
-
     const pathLength = 160;
 
-
-    const pathMaterial =
-        new THREE.MeshStandardMaterial({
-
-            color: 0x8a765d,
-
-            roughness: 1
-
-        });
-
+    const material = new THREE.MeshStandardMaterial({
+        color: 0x8a765d,
+        roughness: 1
+    });
 
     for (
         let z = -pathLength / 2;
         z < pathLength / 2;
         z += blockSize
     ) {
-
         for (
             let x = -pathWidth;
             x <= pathWidth;
             x += blockSize
         ) {
-
-            const geometry =
-                new THREE.BoxGeometry(
-
-                    blockSize,
-                    0.35,
-                    blockSize
-
-                );
-
-
-            const block =
-                new THREE.Mesh(
-
-                    geometry,
-                    pathMaterial
-
-                );
-
-
-            block.position.set(
-
-                x,
-                0.15,
-                z
-
+            const geometry = new THREE.BoxGeometry(
+                blockSize,
+                0.35,
+                blockSize
             );
 
+            const block = new THREE.Mesh(
+                geometry,
+                material
+            );
 
+            block.position.set(x, 0.15, z);
+            block.castShadow = true;
             block.receiveShadow = true;
 
-            block.castShadow = true;
-
-
             scene.add(block);
-
             worldObjects.push(block);
-
         }
-
     }
-
 }
-
 
 /* =========================================================
    MONTAÑAS
    ========================================================= */
 
 function createMountains() {
+    const material = new THREE.MeshStandardMaterial({
+        color: 0x5c526b,
+        roughness: 1
+    });
 
-    const mountainMaterial =
-        new THREE.MeshStandardMaterial({
+    for (const side of [-1, 1]) {
+        for (let i = 0; i < 15; i++) {
+            const height = 8 + Math.random() * 15;
+            const width = 8 + Math.random() * 15;
 
-            color: 0x5c526b,
-
-            roughness: 1
-
-        });
-
-
-    /* Lado izquierdo */
-
-    for (let i = 0; i < 15; i++) {
-
-        const height =
-            8 + Math.random() * 15;
-
-        const width =
-            8 + Math.random() * 15;
-
-
-        const geometry =
-            new THREE.ConeGeometry(
-
+            const geometry = new THREE.ConeGeometry(
                 width,
                 height,
                 6
-
             );
 
-
-        const mountain =
-            new THREE.Mesh(
-
+            const mountain = new THREE.Mesh(
                 geometry,
-                mountainMaterial
-
+                material
             );
 
-
-        mountain.position.set(
-
-            -25 + Math.random() * 8,
-
-            height / 2 - 0.2,
-
-            -70 + Math.random() * 150
-
-        );
-
-
-        mountain.rotation.y =
-            Math.random() * Math.PI;
-
-
-        mountain.receiveShadow = true;
-
-        mountain.castShadow = true;
-
-
-        scene.add(mountain);
-
-    }
-
-
-    /* Lado derecho */
-
-    for (let i = 0; i < 15; i++) {
-
-        const height =
-            8 + Math.random() * 15;
-
-        const width =
-            8 + Math.random() * 15;
-
-
-        const geometry =
-            new THREE.ConeGeometry(
-
-                width,
-                height,
-                6
-
+            mountain.position.set(
+                side * (25 + Math.random() * 8),
+                height / 2 - 0.2,
+                -70 + Math.random() * 150
             );
 
+            mountain.rotation.y =
+                Math.random() * Math.PI;
 
-        const mountain =
-            new THREE.Mesh(
+            mountain.castShadow = true;
+            mountain.receiveShadow = true;
 
-                geometry,
-                mountainMaterial
-
-            );
-
-
-        mountain.position.set(
-
-            25 + Math.random() * 8,
-
-            height / 2 - 0.2,
-
-            -70 + Math.random() * 150
-
-        );
-
-
-        mountain.rotation.y =
-            Math.random() * Math.PI;
-
-
-        mountain.receiveShadow = true;
-
-        mountain.castShadow = true;
-
-
-        scene.add(mountain);
-
-    }
-
-}
-
-
-/* =========================================================
-   JOYSTICK
-   ========================================================= */
-
-function setupJoystick() {
-
-    joystickBase.addEventListener(
-        "pointerdown",
-        joystickStart
-    );
-
-    window.addEventListener(
-        "pointermove",
-        joystickMove
-    );
-
-    window.addEventListener(
-        "pointerup",
-        joystickEnd
-    );
-
-    window.addEventListener(
-        "pointercancel",
-        joystickEnd
-    );
-
-}
-
-
-/* =========================================================
-   JOYSTICK - INICIO
-   ========================================================= */
-
-function joystickStart(event) {
-
-    joystickActive = true;
-
-    joystickPointerId =
-        event.pointerId;
-
-    joystickBase.setPointerCapture(
-        event.pointerId
-    );
-
-    updateJoystick(
-        event.clientX,
-        event.clientY
-    );
-
-}
-
-
-/* =========================================================
-   JOYSTICK - MOVIMIENTO
-   ========================================================= */
-
-function joystickMove(event) {
-
-    if (!joystickActive) {
-        return;
-    }
-
-    if (
-        event.pointerId !==
-        joystickPointerId
-    ) {
-        return;
-    }
-
-    updateJoystick(
-        event.clientX,
-        event.clientY
-    );
-
-}
-
-
-/* =========================================================
-   CALCULAR JOYSTICK
-   ========================================================= */
-
-function updateJoystick(clientX, clientY) {
-
-    const rect =
-        joystickBase.getBoundingClientRect();
-
-
-    const centerX =
-        rect.left +
-        rect.width / 2;
-
-
-    const centerY =
-        rect.top +
-        rect.height / 2;
-
-
-    let dx =
-        clientX - centerX;
-
-
-    let dy =
-        clientY - centerY;
-
-
-    const maxDistance =
-        45;
-
-
-    const distance =
-        Math.sqrt(
-            dx * dx +
-            dy * dy
-        );
-
-
-    if (distance > maxDistance) {
-
-        dx =
-            dx / distance *
-            maxDistance;
-
-        dy =
-            dy / distance *
-            maxDistance;
-
-    }
-
-
-    joystickStick.style.transform =
-        `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-
-
-    joystickX =
-        dx / maxDistance;
-
-
-    joystickY =
-        dy / maxDistance;
-
-}
-
-
-/* =========================================================
-   JOYSTICK - TERMINAR
-   ========================================================= */
-
-function joystickEnd() {
-
-    joystickActive = false;
-
-    joystickPointerId = null;
-
-    joystickX = 0;
-
-    joystickY = 0;
-
-
-    joystickStick.style.transform =
-        "translate(-50%, -50%)";
-
-}
-
-
-/* =========================================================
-   CÁMARA TÁCTIL
-   ========================================================= */
-
-let lookActive = false;
-
-let lastTouchX = 0;
-
-function setupTouchCamera() {
-
-    renderer.domElement.addEventListener(
-        "pointerdown",
-        event => {
-
-            /*
-                No usamos el toque del joystick
-                para girar la cámara.
-            */
-
-            if (
-                event.clientX <
-                window.innerWidth * 0.35
-            ) {
-                return;
-            }
-
-
-            lookActive = true;
-
-            lastTouchX =
-                event.clientX;
-
+            scene.add(mountain);
         }
-    );
-
-
-    renderer.domElement.addEventListener(
-        "pointermove",
-        event => {
-
-            if (!lookActive) {
-                return;
-            }
-
-
-            const difference =
-                event.clientX -
-                lastTouchX;
-
-
-            lastTouchX =
-                event.clientX;
-
-
-            playerRotation -=
-                difference * 0.004;
-
-
-            camera.rotation.y =
-                playerRotation;
-
-        }
-    );
-
-
-    window.addEventListener(
-        "pointerup",
-        () => {
-
-            lookActive = false;
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   MOVIMIENTO
-   ========================================================= */
-
-function updatePlayer() {
-
-    if (!camera) {
-        return;
     }
-
-
-    const speed =
-        WORLD.moveSpeed;
-
-
-    /*
-        Dirección hacia adelante
-    */
-
-    const forward =
-        new THREE.Vector3(
-
-            0,
-            0,
-            -1
-
-        );
-
-
-    forward.applyAxisAngle(
-
-        new THREE.Vector3(0, 1, 0),
-
-        playerRotation
-
-    );
-
-
-    /*
-        Dirección lateral
-    */
-
-    const right =
-        new THREE.Vector3(
-
-            1,
-            0,
-            0
-
-        );
-
-
-    right.applyAxisAngle(
-
-        new THREE.Vector3(0, 1, 0),
-
-        playerRotation
-
-    );
-
-
-    /*
-        Movimiento
-    */
-
-    const movement =
-        new THREE.Vector3();
-
-
-    movement.addScaledVector(
-
-        forward,
-
-        -joystickY * speed
-
-    );
-
-
-    movement.addScaledVector(
-
-        right,
-
-        joystickX * speed
-
-    );
-
-
-    camera.position.add(
-        movement
-    );
-
-
-    /*
-        Límites del mundo
-    */
-
-    const limitX =
-        WORLD.width / 2 - 2;
-
-
-    const limitZ =
-        WORLD.depth / 2 - 2;
-
-
-    camera.position.x =
-        THREE.MathUtils.clamp(
-
-            camera.position.x,
-
-            -limitX,
-            limitX
-
-        );
-
-
-    camera.position.z =
-        THREE.MathUtils.clamp(
-
-            camera.position.z,
-
-            -limitZ,
-            limitZ
-
-        );
-
-
-    /*
-        Altura del jugador
-    */
-
-    camera.position.y =
-        WORLD.playerHeight;
-
 }
 
-
-/* =========================================================
-   ANIMACIÓN
-   ========================================================= */
-
-function animate() {
-
-    requestAnimationFrame(
-        animate
-    );
-
-
-    if (!animationStarted) {
-        return;
-    }
-
-
-    updatePlayer();
-
-   animatePetals();
-
-
-    renderer.render(
-        scene,
-        camera
-    );
-
-}
-
-
-/* =========================================================
-   RESIZE
-   ========================================================= */
-
-function onWindowResize() {
-
-    if (!camera || !renderer) {
-        return;
-    }
-
-
-    camera.aspect =
-        window.innerWidth /
-        window.innerHeight;
-
-
-    camera.updateProjectionMatrix();
-
-
-    renderer.setSize(
-
-        window.innerWidth,
-        window.innerHeight
-
-    );
-
-}
 /* =========================================================
    🌸 CEREZOS
    ========================================================= */
@@ -1257,7 +463,7 @@ function createCherryTree(x, z, scale = 1) {
 
 
     /* -----------------------------
-       FLORES DE CEREZO
+       🌸 FLORES DE CEREZO
        ----------------------------- */
 
     const flowerMaterials = [
@@ -1276,11 +482,6 @@ function createCherryTree(x, z, scale = 1) {
 
     ];
 
-
-    /*
-       Varias "nubes" de flores alrededor
-       de las ramas.
-    */
 
     for (let i = 0; i < 18; i++) {
 
@@ -1441,7 +642,7 @@ function createTulip(x, z) {
 
 
     /* -----------------------------
-       FLOR
+       🌷 FLOR
        ----------------------------- */
 
     const flowerGeometry =
@@ -1548,17 +749,12 @@ function createTulip(x, z) {
 
 
 /* =========================================================
-   🌷 CREAR MUCHOS TULIPANES
+   🌷 CREAR JARDÍN DE TULIPANES
    ========================================================= */
 
 function createTulipGarden() {
 
     for (let z = -78; z < 82; z += 4) {
-
-        /*
-           Evitamos que los tulipanes estén
-           directamente encima del camino.
-        */
 
         const leftX =
             -6.5 -
@@ -1581,11 +777,6 @@ function createTulipGarden() {
             z + Math.random() * 2 - 1
         );
 
-
-        /*
-           Alguno extra para que el jardín
-           se vea menos uniforme.
-        */
 
         if (Math.random() > 0.45) {
 
@@ -1615,9 +806,6 @@ function createTulipGarden() {
    🍃 PÉTALOS DE CEREZO
    ========================================================= */
 
-const petals = [];
-
-
 function createCherryPetals() {
 
     const petalMaterial =
@@ -1627,7 +815,9 @@ function createCherryPetals() {
 
             transparent: true,
 
-            opacity: 0.9
+            opacity: 0.9,
+
+            side: THREE.DoubleSide
 
         });
 
@@ -1720,11 +910,6 @@ function animatePetals() {
             petal.userData.rotation;
 
 
-        /*
-           Cuando llega al suelo,
-           vuelve a aparecer arriba.
-        */
-
         if (petal.position.y < 0) {
 
             petal.position.y =
@@ -1759,5 +944,1505 @@ function createRomanticGarden() {
 }
 
 /* =========================================================
-   FIN
+   🪧 CARTEL INTERACTIVO
+   ========================================================= */
+
+function createSign(x, z, index) {
+
+    const group =
+        new THREE.Group();
+
+
+    /* -----------------------------
+       POSTE
+       ----------------------------- */
+
+    const woodMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x704b32,
+            roughness: 1
+        });
+
+
+    const postGeometry =
+        new THREE.BoxGeometry(
+            0.18,
+            1.8,
+            0.18
+        );
+
+
+    const post =
+        new THREE.Mesh(
+            postGeometry,
+            woodMaterial
+        );
+
+
+    post.position.y =
+        0.9;
+
+
+    post.castShadow = true;
+
+
+    group.add(post);
+
+
+    /* -----------------------------
+       TABLA
+       ----------------------------- */
+
+    const boardGeometry =
+        new THREE.BoxGeometry(
+            1.8,
+            1.0,
+            0.16
+        );
+
+
+    const board =
+        new THREE.Mesh(
+            boardGeometry,
+            woodMaterial
+        );
+
+
+    board.position.y =
+        1.55;
+
+
+    board.castShadow = true;
+
+
+    group.add(board);
+
+
+    /* -----------------------------
+       POSICIÓN
+       ----------------------------- */
+
+    group.position.set(
+        x,
+        0,
+        z
+    );
+
+
+    scene.add(group);
+
+
+    signs.push({
+
+        object: group,
+
+        position:
+            new THREE.Vector3(
+                x,
+                1.4,
+                z
+            ),
+
+        message:
+            SIGN_MESSAGES[index],
+
+        index: index,
+
+        opened: false
+
+    });
+
+}
+
+
+/* =========================================================
+   🪧 CREAR LOS 4 CARTELES
+   ========================================================= */
+
+function createSigns() {
+
+    const positions = [
+
+        [-6.4, -50],
+
+        [6.4, -22],
+
+        [-6.4, 12],
+
+        [6.4, 45]
+
+    ];
+
+
+    positions.forEach(
+        (position, index) => {
+
+            createSign(
+                position[0],
+                position[1],
+                index
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   💬 INTERFAZ DE MENSAJES
+   ========================================================= */
+
+function createMessageUI() {
+
+    if (
+        document.getElementById(
+            "world-message-ui"
+        )
+    ) {
+        return;
+    }
+
+
+    /* -----------------------------
+       ESTILOS
+       ----------------------------- */
+
+    const style =
+        document.createElement(
+            "style"
+        );
+
+
+    style.id =
+        "world-message-style";
+
+
+    style.textContent = `
+
+        #world-message-ui {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 9999;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 25px;
+
+            box-sizing: border-box;
+
+            background:
+                rgba(20, 8, 20, .42);
+
+            pointer-events: auto;
+
+        }
+
+
+        #world-message-box {
+
+            width:
+                min(90vw, 430px);
+
+            padding:
+                24px 22px;
+
+            border-radius:
+                18px;
+
+            background:
+                rgba(255, 240, 247, .97);
+
+            color:
+                #4a3040;
+
+            text-align:
+                center;
+
+            box-shadow:
+                0 12px 45px
+                rgba(0,0,0,.35);
+
+            font-family:
+                Arial, sans-serif;
+
+            animation:
+                messagePop .25s ease;
+
+        }
+
+
+        #world-message-title {
+
+            margin:
+                0 0 12px;
+
+            font-size:
+                22px;
+
+        }
+
+
+        #world-message-text {
+
+            margin:
+                0;
+
+            font-size:
+                18px;
+
+            line-height:
+                1.5;
+
+        }
+
+
+        #world-message-close {
+
+            margin-top:
+                18px;
+
+            padding:
+                10px 20px;
+
+            border:
+                0;
+
+            border-radius:
+                12px;
+
+            background:
+                #e887ad;
+
+            color:
+                white;
+
+            font-size:
+                16px;
+
+            cursor:
+                pointer;
+
+        }
+
+
+        #sign-interaction {
+
+            position:
+                fixed;
+
+            left:
+                50%;
+
+            bottom:
+                17%;
+
+            transform:
+                translateX(-50%);
+
+            z-index:
+                9998;
+
+            display:
+                none;
+
+            padding:
+                11px 18px;
+
+            border:
+                0;
+
+            border-radius:
+                14px;
+
+            background:
+                rgba(40,25,35,.88);
+
+            color:
+                white;
+
+            font-size:
+                16px;
+
+            cursor:
+                pointer;
+
+        }
+
+
+        @keyframes messagePop {
+
+            from {
+
+                opacity:
+                    0;
+
+                transform:
+                    scale(.9);
+
+            }
+
+            to {
+
+                opacity:
+                    1;
+
+                transform:
+                    scale(1);
+
+            }
+
+        }
+
+    `;
+
+
+    document.head.appendChild(
+        style
+    );
+
+
+    /* -----------------------------
+       VENTANA DEL MENSAJE
+       ----------------------------- */
+
+    const ui =
+        document.createElement(
+            "div"
+        );
+
+
+    ui.id =
+        "world-message-ui";
+
+
+    ui.innerHTML = `
+
+        <div
+            id="world-message-box"
+        >
+
+            <h2
+                id="world-message-title"
+            >
+                🪧 Un mensaje para ti
+            </h2>
+
+
+            <p
+                id="world-message-text"
+            ></p>
+
+
+            <button
+                id="world-message-close"
+            >
+                Continuar ❤️
+            </button>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        ui
+    );
+
+
+    /* -----------------------------
+       BOTÓN DEL CARTEL
+       ----------------------------- */
+
+    const interaction =
+        document.createElement(
+            "button"
+        );
+
+
+    interaction.id =
+        "sign-interaction";
+
+
+    interaction.textContent =
+        "🪧 Leer cartel";
+
+
+    document.body.appendChild(
+        interaction
+    );
+
+
+    /* -----------------------------
+       EVENTOS
+       ----------------------------- */
+
+    document
+        .getElementById(
+            "world-message-close"
+        )
+        .addEventListener(
+            "click",
+            closeMessage
+        );
+
+
+    interaction.addEventListener(
+        "click",
+        interactWithNearestObject
+    );
+
+}
+
+
+/* =========================================================
+   💬 MOSTRAR MENSAJE
+   ========================================================= */
+
+function showMessage(
+    title,
+    message,
+    duration = 3000
+) {
+
+    createMessageUI();
+
+
+    const ui =
+        document.getElementById(
+            "world-message-ui"
+        );
+
+
+    const titleElement =
+        document.getElementById(
+            "world-message-title"
+        );
+
+
+    const textElement =
+        document.getElementById(
+            "world-message-text"
+        );
+
+
+    titleElement.textContent =
+        title;
+
+
+    textElement.textContent =
+        message;
+
+
+    ui.style.display =
+        "flex";
+
+
+    clearTimeout(
+        messageTimer
+    );
+
+
+    messageTimer =
+        setTimeout(() => {
+
+            closeMessage();
+
+        }, duration);
+
+}
+
+
+/* =========================================================
+   ❌ CERRAR MENSAJE
+   ========================================================= */
+
+function closeMessage() {
+
+    const ui =
+        document.getElementById(
+            "world-message-ui"
+        );
+
+
+    if (ui) {
+
+        ui.style.display =
+            "none";
+
+    }
+
+
+    clearTimeout(
+        messageTimer
+    );
+
+
+    activeMessage =
+        null;
+
+}
+
+
+/* =========================================================
+   🪧 BUSCAR CARTEL MÁS CERCANO
+   ========================================================= */
+
+function getNearestSign() {
+
+    if (
+        !camera ||
+        signs.length === 0
+    ) {
+
+        return null;
+
+    }
+
+
+    let nearest =
+        null;
+
+
+    let nearestDistance =
+        Infinity;
+
+
+    signs.forEach(
+        sign => {
+
+            const distance =
+                camera.position.distanceTo(
+                    sign.position
+                );
+
+
+            if (
+                distance <
+                    nearestDistance &&
+                distance <
+                    4
+            ) {
+
+                nearest =
+                    sign;
+
+                nearestDistance =
+                    distance;
+
+            }
+
+        }
+    );
+
+
+    return nearest;
+
+}
+
+
+/* =========================================================
+   🪧 ACTUALIZAR BOTÓN DEL CARTEL
+   ========================================================= */
+
+function updateSignInteraction() {
+
+    const button =
+        document.getElementById(
+            "sign-interaction"
+        );
+
+
+    if (!button) {
+        return;
+    }
+
+
+    const sign =
+        getNearestSign();
+
+
+    if (
+        sign &&
+        !activeMessage
+    ) {
+
+        button.style.display =
+            "block";
+
+
+        button.textContent =
+            `🪧 Leer cartel ${sign.index + 1}`;
+
+    }
+
+    else {
+
+        button.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =========================================================
+   🪧 LEER CARTEL
+   ========================================================= */
+
+function interactWithNearestObject() {
+
+    const sign =
+        getNearestSign();
+
+
+    if (!sign) {
+        return;
+    }
+
+
+    activeMessage =
+        sign;
+
+
+    showMessage(
+
+        `🪧 Cartel ${sign.index + 1}`,
+
+        sign.message,
+
+        3000
+
+    );
+
+}
+
+
+/* =========================================================
+   🏠 CASITA
+   ========================================================= */
+
+function createHouse() {
+
+    house =
+        new THREE.Group();
+
+
+    /* -----------------------------
+       MATERIALES
+       ----------------------------- */
+
+    const wallMaterial =
+        new THREE.MeshStandardMaterial({
+
+            color:
+                0xc89b76,
+
+            roughness:
+                1
+
+        });
+
+
+    const roofMaterial =
+        new THREE.MeshStandardMaterial({
+
+            color:
+                0x6d3d52,
+
+            roughness:
+                1
+
+        });
+
+
+    const darkMaterial =
+        new THREE.MeshStandardMaterial({
+
+            color:
+                0x3a2630,
+
+            roughness:
+                1
+
+        });
+
+
+    /* -----------------------------
+       CUERPO DE LA CASA
+       ----------------------------- */
+
+    const body =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                8,
+                4.5,
+                7
+            ),
+
+            wallMaterial
+
+        );
+
+
+    body.position.y =
+        2.25;
+
+
+    body.castShadow =
+        true;
+
+
+    body.receiveShadow =
+        true;
+
+
+    house.add(
+        body
+    );
+
+
+    /* -----------------------------
+       TECHO
+       ----------------------------- */
+
+    const roof =
+        new THREE.Mesh(
+
+            new THREE.ConeGeometry(
+                5.7,
+                3.5,
+                4
+            ),
+
+            roofMaterial
+
+        );
+
+
+    roof.position.y =
+        6.2;
+
+
+    roof.rotation.y =
+        Math.PI / 4;
+
+
+    roof.castShadow =
+        true;
+
+
+    house.add(
+        roof
+    );
+
+
+    /* -----------------------------
+       PUERTA
+       ----------------------------- */
+
+    const door =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                1.3,
+                2.3,
+                0.15
+            ),
+
+            darkMaterial
+
+        );
+
+
+    door.position.set(
+        0,
+        1.15,
+        3.55
+    );
+
+
+    house.add(
+        door
+    );
+
+
+    /* -----------------------------
+       VENTANAS
+       ----------------------------- */
+
+    for (
+        const x of [-2.3, 2.3]
+    ) {
+
+        const windowMesh =
+            new THREE.Mesh(
+
+                new THREE.BoxGeometry(
+                    1.4,
+                    1.3,
+                    0.12
+                ),
+
+                new THREE.MeshStandardMaterial({
+
+                    color:
+                        0xffd59a,
+
+                    emissive:
+                        0xff8c69,
+
+                    emissiveIntensity:
+                        0.45
+
+                })
+
+            );
+
+
+        windowMesh.position.set(
+            x,
+            2.5,
+            3.55
+        );
+
+
+        house.add(
+            windowMesh
+        );
+
+    }
+
+
+    /* -----------------------------
+       UBICACIÓN
+       ----------------------------- */
+
+    house.position.set(
+        0,
+        0,
+        78
+    );
+
+
+    scene.add(
+        house
+    );
+
+}
+
+/* =========================================================
+   🏠 DETECTAR CASITA
+   ========================================================= */
+
+function updateHouse() {
+
+    if (
+        !house ||
+        houseTriggered ||
+        !camera
+    ) {
+        return;
+    }
+
+
+    const distance =
+        camera.position.distanceTo(
+            house.position
+        );
+
+
+    if (distance < 7) {
+
+        houseTriggered =
+            true;
+
+
+        showMessage(
+
+            "🏠 Un mensaje para ti ❤️",
+
+            HOUSE_MESSAGE,
+
+            4500
+
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   🎮 CONFIGURAR JOYSTICK
+   ========================================================= */
+
+function setupJoystick() {
+
+    if (!joystickBase) {
+        return;
+    }
+
+
+    joystickBase.addEventListener(
+        "pointerdown",
+        joystickStart
+    );
+
+
+    window.addEventListener(
+        "pointermove",
+        joystickMove
+    );
+
+
+    window.addEventListener(
+        "pointerup",
+        joystickEnd
+    );
+
+
+    window.addEventListener(
+        "pointercancel",
+        joystickEnd
+    );
+
+}
+
+
+/* =========================================================
+   🎮 INICIAR JOYSTICK
+   ========================================================= */
+
+function joystickStart(event) {
+
+    joystickActive =
+        true;
+
+
+    joystickPointerId =
+        event.pointerId;
+
+
+    if (
+        joystickBase.setPointerCapture
+    ) {
+
+        joystickBase.setPointerCapture(
+            event.pointerId
+        );
+
+    }
+
+
+    updateJoystick(
+
+        event.clientX,
+
+        event.clientY
+
+    );
+
+}
+
+
+/* =========================================================
+   🎮 MOVER JOYSTICK
+   ========================================================= */
+
+function joystickMove(event) {
+
+    if (!joystickActive) {
+        return;
+    }
+
+
+    if (
+        event.pointerId !==
+        joystickPointerId
+    ) {
+        return;
+    }
+
+
+    updateJoystick(
+
+        event.clientX,
+
+        event.clientY
+
+    );
+
+}
+
+
+/* =========================================================
+   🎮 ACTUALIZAR POSICIÓN JOYSTICK
+   ========================================================= */
+
+function updateJoystick(
+    clientX,
+    clientY
+) {
+
+    if (
+        !joystickBase ||
+        !joystickStick
+    ) {
+        return;
+    }
+
+
+    const rect =
+        joystickBase.getBoundingClientRect();
+
+
+    const centerX =
+        rect.left +
+        rect.width / 2;
+
+
+    const centerY =
+        rect.top +
+        rect.height / 2;
+
+
+    let dx =
+        clientX -
+        centerX;
+
+
+    let dy =
+        clientY -
+        centerY;
+
+
+    const maxDistance =
+        45;
+
+
+    const distance =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+
+    if (
+        distance >
+        maxDistance
+    ) {
+
+        dx =
+            dx /
+            distance *
+            maxDistance;
+
+
+        dy =
+            dy /
+            distance *
+            maxDistance;
+
+    }
+
+
+    joystickStick.style.transform =
+
+        `translate(
+            calc(-50% + ${dx}px),
+            calc(-50% + ${dy}px)
+        )`;
+
+
+    joystickX =
+        dx /
+        maxDistance;
+
+
+    joystickY =
+        dy /
+        maxDistance;
+
+}
+
+
+/* =========================================================
+   🎮 SOLTAR JOYSTICK
+   ========================================================= */
+
+function joystickEnd() {
+
+    joystickActive =
+        false;
+
+
+    joystickPointerId =
+        null;
+
+
+    joystickX =
+        0;
+
+
+    joystickY =
+        0;
+
+
+    if (joystickStick) {
+
+        joystickStick.style.transform =
+
+            "translate(-50%, -50%)";
+
+    }
+
+}
+
+
+/* =========================================================
+   👀 CÁMARA TÁCTIL
+   ========================================================= */
+
+function setupTouchCamera() {
+
+    renderer.domElement.addEventListener(
+
+        "pointerdown",
+
+        event => {
+
+            /*
+             * La parte izquierda de la pantalla
+             * queda reservada para el joystick.
+             */
+
+            if (
+                event.clientX <
+                window.innerWidth *
+                0.35
+            ) {
+
+                return;
+
+            }
+
+
+            lookActive =
+                true;
+
+
+            lastTouchX =
+                event.clientX;
+
+        }
+
+    );
+
+
+    renderer.domElement.addEventListener(
+
+        "pointermove",
+
+        event => {
+
+            if (!lookActive) {
+                return;
+            }
+
+
+            const difference =
+
+                event.clientX -
+                lastTouchX;
+
+
+            lastTouchX =
+                event.clientX;
+
+
+            playerRotation -=
+
+                difference *
+                0.004;
+
+
+            camera.rotation.y =
+
+                playerRotation;
+
+        }
+
+    );
+
+
+    window.addEventListener(
+
+        "pointerup",
+
+        () => {
+
+            lookActive =
+                false;
+
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   🚶 MOVIMIENTO DEL JUGADOR
+   ========================================================= */
+
+function updatePlayer() {
+
+    if (!camera) {
+        return;
+    }
+
+
+    /*
+     * Dirección hacia adelante.
+     */
+
+    const forward =
+        new THREE.Vector3(
+            0,
+            0,
+            -1
+        );
+
+
+    forward.applyAxisAngle(
+
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        ),
+
+        playerRotation
+
+    );
+
+
+    /*
+     * Dirección lateral.
+     */
+
+    const right =
+        new THREE.Vector3(
+            1,
+            0,
+            0
+        );
+
+
+    right.applyAxisAngle(
+
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        ),
+
+        playerRotation
+
+    );
+
+
+    /*
+     * Movimiento final.
+     */
+
+    const movement =
+        new THREE.Vector3();
+
+
+    movement.addScaledVector(
+
+        forward,
+
+        -joystickY *
+        WORLD.moveSpeed
+
+    );
+
+
+    movement.addScaledVector(
+
+        right,
+
+        joystickX *
+        WORLD.moveSpeed
+
+    );
+
+
+    camera.position.add(
+        movement
+    );
+
+
+    /*
+     * Limitar al jugador
+     * dentro del mundo.
+     */
+
+    const limitX =
+        WORLD.width / 2 -
+        2;
+
+
+    const limitZ =
+        WORLD.depth / 2 -
+        2;
+
+
+    camera.position.x =
+
+        THREE.MathUtils.clamp(
+
+            camera.position.x,
+
+            -limitX,
+
+            limitX
+
+        );
+
+
+    camera.position.z =
+
+        THREE.MathUtils.clamp(
+
+            camera.position.z,
+
+            -limitZ,
+
+            limitZ
+
+        );
+
+
+    /*
+     * Mantener altura
+     * de los ojos.
+     */
+
+    camera.position.y =
+
+        WORLD.playerHeight;
+
+}
+
+
+/* =========================================================
+   🔄 BUCLE PRINCIPAL
+   ========================================================= */
+
+function animate() {
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    if (
+        !animationStarted
+    ) {
+        return;
+    }
+
+
+    /*
+     * Movimiento.
+     */
+
+    updatePlayer();
+
+
+    /*
+     * Pétalos cayendo.
+     */
+
+    animatePetals();
+
+
+    /*
+     * Comprobar carteles.
+     */
+
+    updateSignInteraction();
+
+
+    /*
+     * Comprobar llegada
+     * a la casita.
+     */
+
+    updateHouse();
+
+
+    /*
+     * Renderizar.
+     */
+
+    renderer.render(
+
+        scene,
+
+        camera
+
+    );
+
+}
+
+
+/* =========================================================
+   📱 CAMBIO DE TAMAÑO
+   ========================================================= */
+
+function onWindowResize() {
+
+    if (
+        !camera ||
+        !renderer
+    ) {
+        return;
+    }
+
+
+    camera.aspect =
+
+        window.innerWidth /
+        window.innerHeight;
+
+
+    camera.updateProjectionMatrix();
+
+
+    renderer.setSize(
+
+        window.innerWidth,
+
+        window.innerHeight
+
+    );
+
+}
+
+
+/* =========================================================
+   ❤️ FIN DEL SCRIPT
    ========================================================= */
