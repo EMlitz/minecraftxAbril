@@ -1845,41 +1845,40 @@ function createHouse() {
 
 function updateHouse() {
 
-    if (
-        !house ||
-        houseTriggered ||
-        !camera
-    ) {
-        return;
-    }
-
-
-    const distance =
-        camera.position.distanceTo(
-            house.position
-        );
-
-
-    if (distance < 7) {
-
-        houseTriggered =
-            true;
-
-
-        showMessage(
-
-            "🏠 Un mensaje para ti ❤️",
-
-            HOUSE_MESSAGE,
-
-            4500
-
-        );
-
-    }
-
+       if (
+           !house ||
+           houseTriggered ||
+           !camera
+       ) {
+           return;
+       }
+   
+   
+       const distance =
+           camera.position.distanceTo(
+               house.position
+           );
+   
+   
+       if (distance < 7) {
+   
+       houseTriggered =
+           true;
+   
+       showMessage(
+           "🏠 Un mensaje para ti ❤️",
+           HOUSE_MESSAGE,
+           4500
+       );
+   
+       setTimeout(() => {
+   
+           showProposal();
+   
+       }, 5000);
+   
+   }
 }
-
 
 /* =========================================================
    🎮 CONFIGURAR JOYSTICK
@@ -2439,6 +2438,986 @@ function onWindowResize() {
         window.innerHeight
 
     );
+
+}
+
+/* =========================================================
+   💗 DECLARACIÓN FINAL
+   ========================================================= */
+
+let proposalShown = false;
+let noAttempts = 0;
+
+
+/* =========================================================
+   💗 MOSTRAR LA PREGUNTA
+   ========================================================= */
+
+function showProposal() {
+
+    if (proposalShown) {
+        return;
+    }
+
+    proposalShown = true;
+
+    createProposalUI();
+
+}
+
+
+/* =========================================================
+   💗 CREAR INTERFAZ DE DECLARACIÓN
+   ========================================================= */
+
+function createProposalUI() {
+
+    if (
+        document.getElementById(
+            "proposal-ui"
+        )
+    ) {
+        document.getElementById(
+            "proposal-ui"
+        ).style.display = "flex";
+
+        return;
+    }
+
+
+    const style =
+        document.createElement("style");
+
+
+    style.id =
+        "proposal-style";
+
+
+    style.textContent = `
+
+        #proposal-ui {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 10000;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 25px;
+
+            box-sizing: border-box;
+
+            background:
+                linear-gradient(
+                    rgba(35, 12, 28, .45),
+                    rgba(20, 8, 25, .65)
+                );
+
+            font-family:
+                Arial, sans-serif;
+
+        }
+
+
+        #proposal-box {
+
+            width:
+                min(90vw, 460px);
+
+            padding:
+                35px 25px;
+
+            border-radius:
+                25px;
+
+            background:
+                rgba(255, 239, 247, .97);
+
+            color:
+                #4a3040;
+
+            text-align:
+                center;
+
+            box-shadow:
+                0 15px 60px
+                rgba(0,0,0,.4);
+
+            animation:
+                proposalAppear
+                .6s ease;
+
+        }
+
+
+        #proposal-heart {
+
+            font-size:
+                55px;
+
+            margin-bottom:
+                10px;
+
+            animation:
+                heartBeat
+                1.2s infinite;
+
+        }
+
+
+        #proposal-title {
+
+            margin:
+                0 0 12px;
+
+            font-size:
+                28px;
+
+        }
+
+
+        #proposal-text {
+
+            margin:
+                0 0 25px;
+
+            font-size:
+                18px;
+
+            line-height:
+                1.5;
+
+        }
+
+
+        #proposal-buttons {
+
+            display:
+                flex;
+
+            justify-content:
+                center;
+
+            gap:
+                15px;
+
+        }
+
+
+        .proposal-button {
+
+            border:
+                none;
+
+            border-radius:
+                15px;
+
+            padding:
+                13px 25px;
+
+            font-size:
+                18px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+
+            transition:
+                transform .2s ease;
+
+        }
+
+
+        .proposal-button:hover {
+
+            transform:
+                scale(1.08);
+
+        }
+
+
+        #yes-button {
+
+            background:
+                #e875a5;
+
+            color:
+                white;
+
+        }
+
+
+        #no-button {
+
+            background:
+                #ddd0d6;
+
+            color:
+                #5b4651;
+
+        }
+
+
+        @keyframes proposalAppear {
+
+            from {
+
+                opacity:
+                    0;
+
+                transform:
+                    scale(.8)
+                    translateY(20px);
+
+            }
+
+            to {
+
+                opacity:
+                    1;
+
+                transform:
+                    scale(1)
+                    translateY(0);
+
+            }
+
+        }
+
+
+        @keyframes heartBeat {
+
+            0%, 100% {
+
+                transform:
+                    scale(1);
+
+            }
+
+            50% {
+
+                transform:
+                    scale(1.15);
+
+            }
+
+        }
+
+    `;
+
+
+    document.head.appendChild(
+        style
+    );
+
+
+    const proposal =
+        document.createElement("div");
+
+
+    proposal.id =
+        "proposal-ui";
+
+
+    proposal.innerHTML = `
+
+        <div id="proposal-box">
+
+            <div id="proposal-heart">
+                💗
+            </div>
+
+            <h2 id="proposal-title">
+                Tengo algo que preguntarte...
+            </h2>
+
+            <p id="proposal-text">
+                ¿Quieres ser mi enamorada?
+            </p>
+
+            <div id="proposal-buttons">
+
+                <button
+                    id="yes-button"
+                    class="proposal-button"
+                >
+                    Sí 💖
+                </button>
+
+                <button
+                    id="no-button"
+                    class="proposal-button"
+                >
+                    No 🥺
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        proposal
+    );
+
+
+    document
+        .getElementById("yes-button")
+        .addEventListener(
+            "click",
+            acceptProposal
+        );
+
+
+    document
+        .getElementById("no-button")
+        .addEventListener(
+            "click",
+            rejectProposal
+        );
+
+}
+
+
+/* =========================================================
+   💖 SÍ
+   ========================================================= */
+
+function acceptProposal() {
+
+    const proposal =
+        document.getElementById(
+            "proposal-ui"
+        );
+
+
+    if (proposal) {
+
+        proposal.remove();
+
+    }
+
+
+    createCelebration();
+
+}
+
+
+/* =========================================================
+   🥺 NO
+   ========================================================= */
+
+function rejectProposal() {
+
+    noAttempts++;
+
+
+    const title =
+        document.getElementById(
+            "proposal-title"
+        );
+
+
+    const text =
+        document.getElementById(
+            "proposal-text"
+        );
+
+
+    const noButton =
+        document.getElementById(
+            "no-button"
+        );
+
+
+    if (noAttempts === 1) {
+
+        title.textContent =
+            "🥺 ¿Segura?";
+
+
+        text.textContent =
+            "Piénsalo un poquito más...";
+
+
+        noButton.textContent =
+            "No 🥺";
+
+    }
+
+
+    else if (noAttempts === 2) {
+
+        title.textContent =
+            "💗 ¿De verdad?";
+
+
+        text.textContent =
+            "Solo quería hacerte una pregunta especial...";
+
+
+        noButton.textContent =
+            "No 😭";
+
+    }
+
+
+    else {
+
+        title.textContent =
+            "❤️ Está bien";
+
+
+        text.textContent =
+            "Entiendo tu decisión. Gracias por llegar hasta aquí.";
+
+
+        noButton.style.display =
+            "none";
+
+
+        const yesButton =
+            document.getElementById(
+                "yes-button"
+            );
+
+
+        yesButton.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =========================================================
+   🎆 CELEBRACIÓN
+   ========================================================= */
+
+function createCelebration() {
+
+    const celebration =
+        document.createElement(
+            "div"
+        );
+
+
+    celebration.id =
+        "celebration-ui";
+
+
+    celebration.innerHTML = `
+
+        <div id="celebration-content">
+
+            <div class="celebration-heart">
+                ❤️
+            </div>
+
+            <h1>
+                ¡SÍ! 🥹❤️
+            </h1>
+
+            <p>
+                Me haces el hombre más feliz
+                del mundo.
+            </p>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        celebration
+    );
+
+
+    createCelebrationStyles();
+
+    launchFireworks();
+
+    createFloatingHearts();
+
+}
+
+
+/* =========================================================
+   🎆 ESTILOS DE CELEBRACIÓN
+   ========================================================= */
+
+function createCelebrationStyles() {
+
+    if (
+        document.getElementById(
+            "celebration-style"
+        )
+    ) {
+        return;
+    }
+
+
+    const style =
+        document.createElement(
+            "style"
+        );
+
+
+    style.id =
+        "celebration-style";
+
+
+    style.textContent = `
+
+        #celebration-ui {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 20000;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            background:
+                rgba(20, 5, 18, .15);
+
+            pointer-events:
+                none;
+
+        }
+
+
+        #celebration-content {
+
+            position:
+                relative;
+
+            z-index:
+                20002;
+
+            width:
+                min(85vw, 500px);
+
+            padding:
+                35px 25px;
+
+            border-radius:
+                25px;
+
+            text-align:
+                center;
+
+            background:
+                rgba(255, 240, 247, .96);
+
+            color:
+                #4a3040;
+
+            box-shadow:
+                0 15px 60px
+                rgba(0,0,0,.35);
+
+            animation:
+                celebrationPop
+                .7s ease;
+
+        }
+
+
+        #celebration-content h1 {
+
+            font-size:
+                42px;
+
+            margin:
+                5px 0 15px;
+
+        }
+
+
+        #celebration-content p {
+
+            font-size:
+                21px;
+
+            line-height:
+                1.5;
+
+            margin:
+                0;
+
+        }
+
+
+        .celebration-heart {
+
+            font-size:
+                70px;
+
+            animation:
+                heartBeat
+                1s infinite;
+
+        }
+
+
+        .floating-heart {
+
+            position:
+                fixed;
+
+            z-index:
+                20001;
+
+            font-size:
+                28px;
+
+            pointer-events:
+                none;
+
+            animation:
+                heartFloat
+                3s linear
+                forwards;
+
+        }
+
+
+        .firework-particle {
+
+            position:
+                fixed;
+
+            width:
+                7px;
+
+            height:
+                7px;
+
+            border-radius:
+                50%;
+
+            z-index:
+                20001;
+
+            pointer-events:
+                none;
+
+            animation:
+                firework
+                1.2s ease-out
+                forwards;
+
+        }
+
+
+        @keyframes celebrationPop {
+
+            from {
+
+                opacity:
+                    0;
+
+                transform:
+                    scale(.5);
+
+            }
+
+            to {
+
+                opacity:
+                    1;
+
+                transform:
+                    scale(1);
+
+            }
+
+        }
+
+
+        @keyframes heartFloat {
+
+            from {
+
+                transform:
+                    translateY(0)
+                    scale(.6);
+
+                opacity:
+                    1;
+
+            }
+
+            to {
+
+                transform:
+                    translateY(-100vh)
+                    scale(1.5);
+
+                opacity:
+                    0;
+
+            }
+
+        }
+
+
+        @keyframes firework {
+
+            from {
+
+                transform:
+                    translate(0, 0)
+                    scale(1);
+
+                opacity:
+                    1;
+
+            }
+
+            to {
+
+                transform:
+                    translate(
+                        var(--x),
+                        var(--y)
+                    )
+                    scale(.1);
+
+                opacity:
+                    0;
+
+            }
+
+        }
+
+    `;
+
+
+    document.head.appendChild(
+        style
+    );
+
+}
+
+
+/* =========================================================
+   🎆 FUEGOS ARTIFICIALES
+   ========================================================= */
+
+function launchFireworks() {
+
+    for (
+        let burst = 0;
+        burst < 12;
+        burst++
+    ) {
+
+        setTimeout(
+            () => {
+
+                createFireworkBurst();
+
+            },
+
+            burst * 350
+
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   🎆 CREAR EXPLOSIÓN
+   ========================================================= */
+
+function createFireworkBurst() {
+
+    const centerX =
+        Math.random() *
+        window.innerWidth;
+
+
+    const centerY =
+        100 +
+        Math.random() *
+        window.innerHeight *
+        0.45;
+
+
+    const particles =
+        28;
+
+
+    for (
+        let i = 0;
+        i < particles;
+        i++
+    ) {
+
+        const particle =
+            document.createElement(
+                "div"
+            );
+
+
+        particle.className =
+            "firework-particle";
+
+
+        particle.style.left =
+            `${centerX}px`;
+
+
+        particle.style.top =
+            `${centerY}px`;
+
+
+        const angle =
+            Math.random() *
+            Math.PI *
+            2;
+
+
+        const distance =
+            50 +
+            Math.random() *
+            130;
+
+
+        const x =
+            Math.cos(angle) *
+            distance;
+
+
+        const y =
+            Math.sin(angle) *
+            distance;
+
+
+        particle.style.setProperty(
+            "--x",
+            `${x}px`
+        );
+
+
+        particle.style.setProperty(
+            "--y",
+            `${y}px`
+        );
+
+
+        document.body.appendChild(
+            particle
+        );
+
+
+        setTimeout(
+            () => {
+
+                particle.remove();
+
+            },
+
+            1300
+
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ❤️ CORAZONES FLOTANDO
+   ========================================================= */
+
+function createFloatingHearts() {
+
+    for (
+        let i = 0;
+        i < 45;
+        i++
+    ) {
+
+        setTimeout(
+            () => {
+
+                const heart =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                heart.className =
+                    "floating-heart";
+
+
+                heart.textContent =
+                    Math.random() > 0.3
+                        ? "❤️"
+                        : "💗";
+
+
+                heart.style.left =
+                    `${Math.random() * 100}%`;
+
+
+                heart.style.top =
+                    `${85 + Math.random() * 20}%`;
+
+
+                heart.style.fontSize =
+                    `${18 + Math.random() * 25}px`;
+
+
+                heart.style.animationDuration =
+                    `${2.5 + Math.random() * 2}s`;
+
+
+                document.body.appendChild(
+                    heart
+                );
+
+
+                setTimeout(
+                    () => {
+
+                        heart.remove();
+
+                    },
+
+                    5000
+
+                );
+
+            },
+
+            i * 120
+
+        );
+
+    }
 
 }
 
