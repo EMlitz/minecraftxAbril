@@ -3098,30 +3098,29 @@ function createCelebrationStyles() {
 
         .firework-particle {
 
-            position:
-                fixed;
-
-            width:
-                7px;
-
-            height:
-                7px;
-
-            border-radius:
-                50%;
-
-            z-index:
-                20001;
-
-            pointer-events:
-                none;
-
-            animation:
-                firework
-                1.2s ease-out
-                forwards;
-
-        }
+             position:
+                 absolute;
+         
+             width:
+                 8px;
+         
+             height:
+                 8px;
+         
+             border-radius:
+                 50%;
+         
+             z-index:
+                 20003;
+         
+             pointer-events:
+                 none;
+         
+             will-change:
+                 transform,
+                 opacity;
+         
+         }
 
 
         @keyframes celebrationPop {
@@ -3174,38 +3173,8 @@ function createCelebrationStyles() {
             }
 
         }
+   `;
 
-
-        @keyframes firework {
-
-            from {
-
-                transform:
-                    translate(0, 0)
-                    scale(1);
-
-                opacity:
-                    1;
-
-            }
-
-            to {
-
-                transform:
-                    translate(
-                        var(--x),
-                        var(--y)
-                    )
-                    scale(.1);
-
-                opacity:
-                    0;
-
-            }
-
-        }
-
-    `;
 
 
     document.head.appendChild(
@@ -3214,7 +3183,6 @@ function createCelebrationStyles() {
 
 }
 
-
 /* =========================================================
    🎆 FUEGOS ARTIFICIALES
    ========================================================= */
@@ -3222,12 +3190,10 @@ function createCelebrationStyles() {
 function launchFireworks() {
 
     /*
-     * Lanzamos varias explosiones
-     * con pequeños intervalos para
-     * que parezca una celebración real.
+     * Lanzamos varias explosiones durante unos segundos.
      */
 
-    const totalBursts = 18;
+    const totalBursts = 24;
 
     for (
         let i = 0;
@@ -3239,7 +3205,7 @@ function launchFireworks() {
 
             createFireworkBurst();
 
-        }, i * 350);
+        }, i * 300);
 
     }
 
@@ -3253,34 +3219,52 @@ function launchFireworks() {
 function createFireworkBurst() {
 
     /*
-     * Crear un punto aleatorio
-     * donde explotará el fuego artificial.
-     */
-
-    const centerX =
-        10 +
-        Math.random() * 80;
-
-
-    const centerY =
-        10 +
-        Math.random() * 45;
-
-
-    /*
-     * Contenedor de la explosión.
+     * Creamos un punto central para la explosión.
      */
 
     const burst =
         document.createElement("div");
 
 
-    burst.className =
-        "firework-burst";
-
-
     burst.style.position =
         "fixed";
+
+
+    /*
+     * Evitamos colocar demasiados
+     * fuegos justo encima de la tarjeta.
+     */
+
+    let centerX;
+    let centerY;
+
+
+    if (Math.random() < 0.5) {
+
+        /*
+         * Lado izquierdo.
+         */
+
+        centerX =
+            8 +
+            Math.random() * 25;
+
+    } else {
+
+        /*
+         * Lado derecho.
+         */
+
+        centerX =
+            67 +
+            Math.random() * 25;
+
+    }
+
+
+    centerY =
+        8 +
+        Math.random() * 55;
 
 
     burst.style.left =
@@ -3292,15 +3276,15 @@ function createFireworkBurst() {
 
 
     burst.style.width =
-        "0px";
+        "1px";
 
 
     burst.style.height =
-        "0px";
+        "1px";
 
 
     burst.style.zIndex =
-        "20001";
+        "20003";
 
 
     burst.style.pointerEvents =
@@ -3313,10 +3297,29 @@ function createFireworkBurst() {
 
 
     /*
-     * Crear las partículas.
+     * Colores románticos.
      */
 
-    const particleCount = 42;
+    const colors = [
+
+        "#ff1744",
+        "#ff3d81",
+        "#ff69b4",
+        "#ff8fab",
+        "#ffd166",
+        "#ffffff",
+        "#ffb3de",
+        "#c77dff",
+        "#7bdff2"
+
+    ];
+
+
+    /*
+     * Cantidad de partículas.
+     */
+
+    const particleCount = 65;
 
 
     for (
@@ -3336,7 +3339,7 @@ function createFireworkBurst() {
 
 
         /*
-         * Ángulo de salida.
+         * Ángulo de cada partícula.
          */
 
         const angle =
@@ -3350,12 +3353,28 @@ function createFireworkBurst() {
 
 
         /*
+         * Un poco de variación
+         * para que no parezca
+         * un círculo perfecto.
+         */
+
+        const angleVariation =
+            (Math.random() - 0.5) *
+            0.18;
+
+
+        const finalAngle =
+            angle +
+            angleVariation;
+
+
+        /*
          * Distancia de la partícula.
          */
 
         const distance =
-            60 +
-            Math.random() * 100;
+            55 +
+            Math.random() * 115;
 
 
         /*
@@ -3363,12 +3382,12 @@ function createFireworkBurst() {
          */
 
         const x =
-            Math.cos(angle) *
+            Math.cos(finalAngle) *
             distance;
 
 
         const y =
-            Math.sin(angle) *
+            Math.sin(finalAngle) *
             distance;
 
 
@@ -3378,7 +3397,7 @@ function createFireworkBurst() {
 
         const size =
             4 +
-            Math.random() * 5;
+            Math.random() * 6;
 
 
         particle.style.width =
@@ -3389,44 +3408,11 @@ function createFireworkBurst() {
             size + "px";
 
 
-        particle.style.position =
-            "absolute";
-
-
-        particle.style.left =
-            "0px";
-
-
-        particle.style.top =
-            "0px";
-
-
-        particle.style.borderRadius =
-            "50%";
-
-
-        particle.style.pointerEvents =
-            "none";
-
-
         /*
          * Color aleatorio.
          */
 
-        const colors = [
-
-            "#ff4f9a",
-            "#ff77b7",
-            "#ffd166",
-            "#ffffff",
-            "#ff9de2",
-            "#c77dff",
-            "#7bdff2"
-
-        ];
-
-
-        particle.style.background =
+        const color =
             colors[
                 Math.floor(
                     Math.random() *
@@ -3435,30 +3421,45 @@ function createFireworkBurst() {
             ];
 
 
+        particle.style.background =
+            color;
+
+
+        particle.style.borderRadius =
+            "50%";
+
+
         particle.style.boxShadow =
-            "0 0 8px currentColor";
+            `
+                0 0 5px ${color},
+                0 0 12px ${color},
+                0 0 22px ${color}
+            `;
 
 
         /*
-         * Variables para la animación.
+         * Posición inicial.
          */
 
-        particle.style.setProperty(
-            "--firework-x",
-            x + "px"
-        );
+        particle.style.position =
+            "absolute";
 
 
-        particle.style.setProperty(
-            "--firework-y",
-            y + "px"
-        );
+        particle.style.left =
+            "0";
 
 
-        /*
-         * Añadir al centro
-         * de la explosión.
-         */
+        particle.style.top =
+            "0";
+
+
+        particle.style.transform =
+            "translate(-50%, -50%) scale(1.4)";
+
+
+        particle.style.opacity =
+            "1";
+
 
         burst.appendChild(
             particle
@@ -3466,26 +3467,273 @@ function createFireworkBurst() {
 
 
         /*
-         * Animación individual.
+         * Animación de la partícula.
          */
 
-        particle.animate(
+        const animation =
+            particle.animate(
+
+                [
+
+                    {
+                        transform:
+                            "translate(-50%, -50%) scale(1.4)",
+
+                        opacity:
+                            1
+
+                    },
+
+                    {
+                        transform:
+                            `translate(
+                                calc(-50% + ${x * 0.45}px),
+                                calc(-50% + ${y * 0.45}px)
+                            )
+                            scale(1)`,
+
+                        opacity:
+                            1
+
+                    },
+
+                    {
+                        transform:
+                            `translate(
+                                calc(-50% + ${x}px),
+                                calc(-50% + ${y}px)
+                            )
+                            scale(.05)`,
+
+                        opacity:
+                            0
+
+                    }
+
+                ],
+
+                {
+
+                    duration:
+                        1200 +
+                        Math.random() * 500,
+
+                    easing:
+                        "cubic-bezier(.12,.7,.25,1)",
+
+                    fill:
+                        "forwards"
+
+                }
+
+            );
+
+
+        /*
+         * Evitamos que quede
+         * alguna animación pendiente.
+         */
+
+        animation.onfinish =
+            () => {
+
+                particle.remove();
+
+            };
+
+    }
+
+
+    /* =====================================================
+       ✨ DESTELLO CENTRAL
+       ===================================================== */
+
+    const flash =
+        document.createElement(
+            "div"
+        );
+
+
+    flash.style.position =
+        "absolute";
+
+
+    flash.style.left =
+        "0";
+
+
+    flash.style.top =
+        "0";
+
+
+    flash.style.width =
+        "22px";
+
+
+    flash.style.height =
+        "22px";
+
+
+    flash.style.borderRadius =
+        "50%";
+
+
+    flash.style.background =
+        "#ffffff";
+
+
+    flash.style.pointerEvents =
+        "none";
+
+
+    flash.style.boxShadow =
+        `
+            0 0 12px #ffffff,
+            0 0 25px #ffb3de,
+            0 0 45px #ff4f9a,
+            0 0 70px #ff1744
+        `;
+
+
+    burst.appendChild(
+        flash
+    );
+
+
+    /*
+     * Animación del destello.
+     */
+
+    flash.animate(
+
+        [
+
+            {
+
+                transform:
+                    "translate(-50%, -50%) scale(.2)",
+
+                opacity:
+                    1
+
+            },
+
+            {
+
+                transform:
+                    "translate(-50%, -50%) scale(2.2)",
+
+                opacity:
+                    .7
+
+            },
+
+            {
+
+                transform:
+                    "translate(-50%, -50%) scale(4)",
+
+                opacity:
+                    0
+
+            }
+
+        ],
+
+        {
+
+            duration:
+                550,
+
+            easing:
+                "ease-out",
+
+            fill:
+                "forwards"
+
+        }
+
+    );
+
+
+    /* =====================================================
+       ✨ SEGUNDO DESTELLO PEQUEÑO
+       ===================================================== */
+
+    setTimeout(() => {
+
+        const secondFlash =
+            document.createElement(
+                "div"
+            );
+
+
+        secondFlash.style.position =
+            "absolute";
+
+
+        secondFlash.style.left =
+            "0";
+
+
+        secondFlash.style.top =
+            "0";
+
+
+        secondFlash.style.width =
+            "8px";
+
+
+        secondFlash.style.height =
+            "8px";
+
+
+        secondFlash.style.borderRadius =
+            "50%";
+
+
+        secondFlash.style.background =
+            "#ffffff";
+
+
+        secondFlash.style.boxShadow =
+            `
+                0 0 10px #ffffff,
+                0 0 20px #ff69b4
+            `;
+
+
+        secondFlash.style.pointerEvents =
+            "none";
+
+
+        burst.appendChild(
+            secondFlash
+        );
+
+
+        secondFlash.animate(
 
             [
 
                 {
+
                     transform:
-                        "translate(0, 0) scale(1)",
-                    opacity: 1
+                        "translate(-50%, -50%) scale(.5)",
+
+                    opacity:
+                        1
+
                 },
 
                 {
+
                     transform:
-                        `translate(
-                            ${x}px,
-                            ${y}px
-                        ) scale(.15)`,
-                    opacity: 0
+                        "translate(-50%, -50%) scale(2)",
+
+                    opacity:
+                        0
+
                 }
 
             ],
@@ -3493,12 +3741,10 @@ function createFireworkBurst() {
             {
 
                 duration:
-                    900 +
-                    Math.random() *
-                    600,
+                    350,
 
                 easing:
-                    "cubic-bezier(.15,.8,.3,1)",
+                    "ease-out",
 
                 fill:
                     "forwards"
@@ -3507,21 +3753,23 @@ function createFireworkBurst() {
 
         );
 
-    }
+    }, 180);
 
 
     /*
-     * Eliminar la explosión
-     * después de terminar.
+     * Eliminamos completamente
+     * la explosión después
+     * de terminar.
      */
 
     setTimeout(() => {
 
         burst.remove();
 
-    }, 1800);
+    }, 2200);
 
 }
+
 
 
 /* =========================================================
