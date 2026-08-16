@@ -2798,13 +2798,32 @@ function acceptProposal() {
             "proposal-ui"
         );
 
-
     if (proposal) {
 
         proposal.remove();
 
     }
 
+    /*
+     * Detenemos la interacción
+     * con los carteles.
+     */
+
+    const signButton =
+        document.getElementById(
+            "sign-interaction"
+        );
+
+    if (signButton) {
+
+        signButton.style.display =
+            "none";
+
+    }
+
+    /*
+     * Comienza la celebración.
+     */
 
     createCelebration();
 
@@ -2819,22 +2838,24 @@ function rejectProposal() {
 
     noAttempts++;
 
-
     const title =
         document.getElementById(
             "proposal-title"
         );
-
 
     const text =
         document.getElementById(
             "proposal-text"
         );
 
-
     const noButton =
         document.getElementById(
             "no-button"
+        );
+
+    const yesButton =
+        document.getElementById(
+            "yes-button"
         );
 
 
@@ -2843,13 +2864,11 @@ function rejectProposal() {
         title.textContent =
             "🥺 ¿Segura?";
 
-
         text.textContent =
-            "Piénsalo un poquito más...";
-
+            "Piénsalo un poquito más... ❤️";
 
         noButton.textContent =
-            "No 🥺";
+            "Todavía no 🥺";
 
     }
 
@@ -2859,10 +2878,8 @@ function rejectProposal() {
         title.textContent =
             "💗 ¿De verdad?";
 
-
         text.textContent =
-            "Solo quería hacerte una pregunta especial...";
-
+            "Yo tenía muchas ganas de hacerte esta pregunta...";
 
         noButton.textContent =
             "No 😭";
@@ -2875,20 +2892,11 @@ function rejectProposal() {
         title.textContent =
             "❤️ Está bien";
 
-
         text.textContent =
-            "Entiendo tu decisión. Gracias por llegar hasta aquí.";
-
+            "Entiendo tu decisión. Gracias por haber recorrido todo este pequeño mundo conmigo.";
 
         noButton.style.display =
             "none";
-
-
-        const yesButton =
-            document.getElementById(
-                "yes-button"
-            );
-
 
         yesButton.style.display =
             "none";
