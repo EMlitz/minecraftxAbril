@@ -15,14 +15,14 @@ const WORLD = {
    ========================================================= */
 
 const SIGN_MESSAGES = [
-    "ESCRIBE AQUÍ EL MENSAJE DEL CARTEL 1",
-    "ESCRIBE AQUÍ EL MENSAJE DEL CARTEL 2",
-    "ESCRIBE AQUÍ EL MENSAJE DEL CARTEL 3",
-    "ESCRIBE AQUÍ EL MENSAJE DEL CARTEL 4"
+    "Eres muy importante para mi",
+    "Te amo musho",
+    "Eres lo mas bonito que me ha pasado",
+    "Pensar en ti es muy bonito"
 ];
 
 const HOUSE_MESSAGE =
-    "ESCRIBE AQUÍ EL MENSAJE FINAL DE LA CASITA";
+    "Desde que te conocí me has hecho sentir cosas muy bonitas que no esperaba sentir. Contigo me pasó eso de que las cosas bonitas llegan cuando menos te las esperas, y tú fuiste una de ellas. No sé exactamente en qué momento empezaste a gustarme tanto, pero sí sé que me encanta la sensación que me das cuando hablo contigo, cuando hacemosa cualquier cosa juntos o simplemente cuando pienso en ti. Me alegra muchísimo haberte conocido y quería que supieras lo especial que te has vuelto para mí.";
 
 /* =========================================================
    ELEMENTOS HTML
@@ -1332,7 +1332,7 @@ function createMessageUI() {
             <h2
                 id="world-message-title"
             >
-                🪧 Un mensaje para ti
+                Un mensaje para ti
             </h2>
 
 
@@ -1344,7 +1344,7 @@ function createMessageUI() {
             <button
                 id="world-message-close"
             >
-                Continuar ❤️
+                Continuar
             </button>
 
         </div>
@@ -1372,7 +1372,7 @@ function createMessageUI() {
 
 
     interaction.textContent =
-        "🪧 Leer cartel";
+        "Leer cartel";
 
 
     document.body.appendChild(
@@ -3651,7 +3651,7 @@ function createProposalUI() {
                    type="button"
                    onclick="acceptProposal()"
                >
-                   Sí 💖
+                   Si 
                </button>
                
                <button
@@ -3660,7 +3660,7 @@ function createProposalUI() {
                    type="button"
                    onclick="rejectProposal()"
                >
-                   No 🥺
+                   No
                </button>
 
             </div>
