@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <title>Un mundo para ti ❤️</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================================
+         PANTALLA PRINCIPAL
+         ========================================= -->
+
+    <main id="main-menu" class="screen active">
+
+        <div class="minecraft-logo">
+            <div class="logo-main">MINECRAFT</div>
+            <div class="logo-subtitle">UN MUNDO PARA TI</div>
+        </div>
+
+        <button id="start-button" class="minecraft-button">
+            INICIAR JUEGO
+        </button>
+
+        <p class="menu-hint">
+            Una pequeña aventura hecha especialmente para ti ❤️
+        </p>
+
+    </main>
+
+
+    <!-- =========================================
+         PANTALLA DE CARGA
+         ========================================= -->
+
+    <section id="loading-screen" class="screen">
+
+        <div class="loading-container">
+
+            <h1>Generando mundo...</h1>
+
+            <div class="loading-bar">
+                <div id="loading-progress"></div>
+            </div>
+
+            <p id="loading-text">
+                Preparando el mundo...
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         JUEGO
+         ========================================= -->
+
+    <section id="game-screen" class="screen">
+
+        <!-- Aquí estará el mundo 3D -->
+        <div id="game-container"></div>
+
+
+        <!-- =====================================
+             JOYSTICK PARA CELULAR
+             ===================================== -->
+
+        <div id="joystick-container">
+
+            <div id="joystick-base">
+                <div id="joystick-stick"></div>
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             BOTÓN DE INTERACCIÓN
+             ===================================== -->
+
+        <button id="interact-button">
+            👋
+        </button>
+
+
+        <!-- =====================================
+             INDICADOR DE INTERACCIÓN
+             ===================================== -->
+
+        <div id="interaction-hint">
+            Toca para interactuar
+        </div>
+
+
+        <!-- =====================================
+             MENSAJE DE LOS CARTELES
+             ===================================== -->
+
+        <div id="sign-message" class="message-box">
+
+            <div class="message-content">
+
+                <div class="message-sign">
+                    ⚠️
+                </div>
+
+                <p id="sign-message-text">
+                    <!--
+                    AQUÍ APARECERÁ EL MENSAJE
+                    DEL CARTEL
+                    -->
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             MENSAJE DE LA CASITA
+             ===================================== -->
+
+        <div id="house-message" class="message-box">
+
+            <div class="message-content house-message-content">
+
+                <div class="heart-big">
+                    ❤️
+                </div>
+
+                <p id="house-message-text">
+                    <!--
+                    ESCRIBE AQUÍ EL MENSAJE QUE QUIERAS
+                    QUE APAREZCA EN LA CASITA.
+                    -->
+
+                </p>
+
+                <button id="continue-button" class="minecraft-button small">
+                    CONTINUAR
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         PREGUNTA FINAL
+         ========================================= -->
+
+    <section id="question-screen" class="screen">
+
+        <div class="question-container">
+
+            <div class="question-house">
+
+                <div class="question-heart">
+                    ❤️
+                </div>
+
+                <h1 id="question-title">
+                    ¿Te gustaría ser mi enamorada?
+                </h1>
+
+                <p id="question-subtitle">
+                    Hay algo que quiero preguntarte...
+                </p>
+
+                <div class="answer-buttons">
+
+                    <button id="yes-button" class="answer-button yes">
+                        ❤️ SÍ
+                    </button>
+
+                    <button id="no-button" class="answer-button no">
+                        NO
+                    </button>
+
+                </div>
+
+                <p id="no-message"></p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         FINAL FELIZ
+         ========================================= -->
+
+    <section id="final-screen" class="screen">
+
+        <div id="fireworks-container"></div>
+
+        <div id="hearts-container"></div>
+
+        <div class="final-content">
+
+            <div class="big-heart">
+                ❤️
+            </div>
+
+            <h1>
+                ¡SÍ! ❤️
+            </h1>
+
+            <h2>
+                Me haces el hombre más feliz del mundo.
+            </h2>
+
+            <p>
+                Gracias por recorrer este pequeño mundo conmigo.
+            </p>
+
+            <p class="final-love">
+                Te quiero muchísimo ❤️
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         JAVASCRIPT
+         ========================================= -->
+
+    <script src="script.js"></script>
+
+</body>
+</html>
