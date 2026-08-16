@@ -1845,39 +1845,37 @@ function createHouse() {
 
 function updateHouse() {
 
-       if (
-           !house ||
-           houseTriggered ||
-           !camera
-       ) {
-           return;
-       }
-   
-   
-       const distance =
-           camera.position.distanceTo(
-               house.position
-           );
-   
-   
-       if (distance < 7) {
-   
-       houseTriggered =
-           true;
-   
-       showMessage(
-           "🏠 Un mensaje para ti ❤️",
-           HOUSE_MESSAGE,
-           4500
-       );
-   
-       setTimeout(() => {
-   
-           showProposal();
-   
-       }, 5000);
-   
-   }
+    if (
+        !house ||
+        houseTriggered ||
+        !camera
+    ) {
+        return;
+    }
+
+    const distance =
+        camera.position.distanceTo(
+            house.position
+        );
+
+    if (distance < 7) {
+
+        houseTriggered =
+            true;
+
+        showMessage(
+            "🏠 Un mensaje para ti ❤️",
+            HOUSE_MESSAGE,
+            4500
+        );
+
+        setTimeout(() => {
+
+            showProposal();
+
+        }, 4600);
+
+    }
 }
 
 /* =========================================================
