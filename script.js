@@ -2921,7 +2921,7 @@ function createCelebration() {
             </div>
 
             <h1>
-                ¡SÍ! 🥹❤️
+                ¡SÍ!❤️
             </h1>
 
             <p>
